@@ -14,7 +14,7 @@ export function Greeting() {
         <div className="animate-rise">
           <Orb />
         </div>
-        <h1 className="animate-rise mt-8 text-3xl font-medium tracking-tight text-ink" style={{ animationDelay: '90ms' }}>
+        <h1 className="animate-rise mt-12 text-3xl font-medium tracking-tight text-ink" style={{ animationDelay: '90ms' }}>
           How does today feel?
         </h1>
         <p className="animate-rise mt-2 max-w-xs text-base text-earth" style={{ animationDelay: '150ms' }}>
