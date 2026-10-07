@@ -9,7 +9,7 @@ export function Greeting() {
   const [mood, setMood] = useState<(typeof moods)[number] | null>(null)
 
   return (
-    <section className="landing-wash flex flex-1 flex-col px-6 pt-16 pb-28">
+    <section className="landing-wash flex flex-1 flex-col justify-center px-6 py-16">
       <div className="flex flex-col items-center text-center">
         <div className="animate-rise">
           <Orb />
@@ -64,7 +64,7 @@ export function Greeting() {
         </div>
       </div>
 
-      <div className="animate-rise mt-auto pt-8" style={{ animationDelay: '300ms' }}>
+      <div className="animate-rise mt-10" style={{ animationDelay: '300ms' }}>
         <button
           type="button"
           onClick={() => navigate('/boundaries')}

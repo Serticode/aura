@@ -32,7 +32,7 @@ export function Boundaries() {
   }
 
   return (
-    <section className="animate-rise flex flex-1 flex-col px-6 pt-12 pb-28">
+    <section className="animate-rise flex flex-1 flex-col justify-center px-6 py-16">
       <h1 className="text-3xl font-medium tracking-tight text-ink">What kind of support feels right?</h1>
       <p className="mt-2 text-base text-earth">Choose any that fit. You can change them anytime.</p>
 
@@ -62,7 +62,7 @@ export function Boundaries() {
         })}
       </div>
 
-      <div className="mt-auto pt-8">
+      <div className="mt-10">
         <button
           type="button"
           onClick={() => navigate('/hearth')}

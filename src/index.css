@@ -7,6 +7,8 @@
   --color-earth: #6b5b4e;
   --color-cream: #f7f1e7;
   --color-ink: #3b342e;
+  --color-plum: #8b5aa8;
+  --color-crimson: #d94f4f;
 
   --ease-ambient: cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -16,6 +18,8 @@
   --animate-orbit: orbit 9s linear infinite;
   --animate-rise: rise 600ms var(--ease-ambient) both;
   --animate-fade: fade 450ms ease-out both;
+  --animate-gbim: gbim 7s ease-in-out infinite;
+  --animate-heartbeat: heartbeat 700ms ease-in-out infinite;
 
   @keyframes blob {
     0%,
@@ -79,6 +83,50 @@
     }
     to {
       opacity: 1;
+    }
+  }
+
+  @keyframes gbim {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    4% {
+      transform: scale(1.55);
+    }
+    8% {
+      transform: scale(1);
+    }
+    12% {
+      transform: scale(1.45);
+    }
+    16% {
+      transform: scale(1);
+    }
+    20% {
+      transform: scale(1.35);
+    }
+    24% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes heartbeat {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    13% {
+      transform: scale(1.4);
+    }
+    26% {
+      transform: scale(1);
+    }
+    39% {
+      transform: scale(1.25);
+    }
+    52% {
+      transform: scale(1);
     }
   }
 }

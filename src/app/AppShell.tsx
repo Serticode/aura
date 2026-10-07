@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Attribution } from '@/components/Attribution'
 
 const spaces = [
   { to: '/hearth', label: 'Hearth' },
@@ -21,7 +22,7 @@ export function AppShell() {
       {!inOnboarding && (
         <nav
           aria-label="Spaces"
-          className="animate-fade fixed inset-x-0 bottom-0 mx-auto flex w-full max-w-md justify-around border-t border-earth/10 bg-cream py-2"
+          className="animate-fade fixed inset-x-0 bottom-8 mx-auto flex w-full max-w-md justify-around border-t border-earth/10 bg-cream py-2"
           style={{ animationDelay: '400ms' }}
         >
           {spaces.map((space) => (
@@ -43,6 +44,7 @@ export function AppShell() {
           ))}
         </nav>
       )}
+      <Attribution />
     </div>
   )
 }
