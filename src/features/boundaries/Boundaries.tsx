@@ -33,6 +33,12 @@ export function Boundaries() {
 
   return (
     <section className="animate-rise flex flex-1 flex-col justify-center px-6 py-16">
+      <Link
+        to="/"
+        className="mb-6 inline-flex w-fit items-center gap-1 text-sm text-earth underline-offset-4 transition-colors duration-200 ease-ambient hover:text-ink hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta"
+      >
+        <span aria-hidden="true">←</span> Back to the landing
+      </Link>
       <h1 className="text-3xl font-medium tracking-tight text-ink">What kind of support feels right?</h1>
       <p className="mt-2 text-base text-earth">Choose any that fit. You can change them anytime.</p>
 

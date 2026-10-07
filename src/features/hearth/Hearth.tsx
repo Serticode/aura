@@ -21,6 +21,12 @@ const spaces = [
 export function Hearth() {
   return (
     <section className="animate-rise flex flex-1 flex-col justify-center px-6 py-16">
+      <Link
+        to="/"
+        className="mb-6 inline-flex w-fit items-center gap-1 text-sm text-earth underline-offset-4 transition-colors duration-200 ease-ambient hover:text-ink hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta"
+      >
+        <span aria-hidden="true">←</span> Back to the landing
+      </Link>
       <h1 className="text-3xl font-medium tracking-tight text-ink">Where would you like to go?</h1>
       <p className="mt-2 text-base text-earth">All spaces are open to you. Start anywhere.</p>
 

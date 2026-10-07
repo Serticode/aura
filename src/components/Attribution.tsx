@@ -8,7 +8,7 @@ function Heart({ className }: { className: string }) {
 
 export function Attribution() {
   return (
-    <footer className="fixed inset-x-0 bottom-0 z-10 mx-auto flex h-8 w-full max-w-md items-center justify-between border-t border-earth/10 bg-cream px-6">
+    <footer className="fixed inset-x-0 bottom-0 z-10 flex h-8 w-full items-center justify-between border-t border-earth/10 bg-cream px-6">
       <a
         href="https://portfolio.serticode.com"
         target="_blank"
