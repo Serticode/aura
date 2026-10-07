@@ -20,7 +20,9 @@ export function Attribution() {
       </a>
       <span className="inline-flex items-center gap-1 text-xs text-earth">
         <span>Built for Àyà mí</span>
-        <Heart className="animate-gbim h-3 w-3 text-crimson" />
+        <span className="animate-gbim inline-block text-sm leading-none" role="img" aria-label="hibiscus flower">
+          🌺
+        </span>
       </span>
     </footer>
   )
