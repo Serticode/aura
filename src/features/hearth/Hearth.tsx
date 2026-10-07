@@ -33,7 +33,7 @@ export function Hearth() {
           <Link
             key={space.title}
             to={space.to}
-            className="animate-rise rounded-2xl border border-earth/10 bg-white/60 p-4 transition-colors hover:bg-white"
+            className="animate-rise rounded-2xl border border-earth/10 bg-white/60 p-4 transition-colors duration-200 ease-ambient hover:bg-white hover:shadow-md active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta"
             style={{ animationDelay: `${220 + index * 90}ms` }}
           >
             <h2 className="text-lg font-medium text-ink">{space.title}</h2>
