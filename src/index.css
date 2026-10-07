@@ -172,12 +172,27 @@
   }
 }
 
-@utility landing-wash {
-  background-image: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--color-rose) 10%, transparent),
-    transparent 20%
-  );
+@utility btn-wave {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--color-rose-deep);
+    transform: scaleY(0);
+    transform-origin: bottom center;
+    transition: transform 600ms var(--ease-ambient);
+  }
+
+  &:hover::before,
+  &:focus-visible::before {
+    transform: scaleY(1);
+  }
 }
 
 @utility text-link {
@@ -214,6 +229,246 @@
 
   &:hover::after {
     transform: scaleX(1);
+  }
+}
+
+.endear-greeting {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.endear-line {
+  grid-area: 1 / 1;
+}
+
+.endear-word {
+  display: inline-block;
+  vertical-align: baseline;
+  position: relative;
+  z-index: 0;
+}
+
+.endear-word-text {
+  display: inline-block;
+  position: relative;
+  z-index: 1;
+}
+
+.endear-word-text.endear-cube {
+  animation: endear-cube 1000ms var(--ease-ambient) both;
+}
+
+.endear-word-text.endear-fade {
+  animation: endear-fade 900ms var(--ease-ambient) both;
+}
+
+.endear-word-text.endear-pop {
+  animation: endear-pop 900ms var(--ease-ambient) both;
+}
+
+.endear-word-text.endear-rise {
+  animation: endear-rise 900ms var(--ease-ambient) both;
+}
+
+.endear-word-text.endear-glow {
+  animation: endear-glow 1000ms var(--ease-ambient) both;
+}
+
+.endear-word-text.endear-breathe {
+  animation: endear-breathe 2800ms var(--ease-ambient) both;
+}
+
+.endear-word-text.endear-shards {
+  animation: endear-shards-word 1100ms var(--ease-ambient) both;
+}
+
+.endear-shards {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.endear-shard {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 9999px;
+  background: var(--color-rose);
+  animation: endear-shard 1100ms var(--ease-ambient) both;
+}
+
+.endear-shard:nth-child(1) {
+  --tx: -52px;
+  --ty: 14px;
+  --el: 10%;
+}
+
+.endear-shard:nth-child(2) {
+  --tx: -30px;
+  --ty: -34px;
+  --el: 5%;
+}
+
+.endear-shard:nth-child(3) {
+  --tx: -12px;
+  --ty: 38px;
+  --el: 0%;
+}
+
+.endear-shard:nth-child(4) {
+  --tx: 10px;
+  --ty: -40px;
+  --el: 12%;
+}
+
+.endear-shard:nth-child(5) {
+  --tx: 28px;
+  --ty: 30px;
+  --el: 6%;
+}
+
+.endear-shard:nth-child(6) {
+  --tx: 44px;
+  --ty: -18px;
+  --el: 3%;
+}
+
+.endear-shard:nth-child(7) {
+  --tx: -44px;
+  --ty: -8px;
+  --el: 15%;
+}
+
+.endear-shard:nth-child(8) {
+  --tx: 40px;
+  --ty: 16px;
+  --el: 8%;
+}
+
+@keyframes endear-cube {
+  0% {
+    opacity: 0;
+    transform: perspective(500px) rotateX(90deg);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(500px) rotateX(0deg);
+  }
+}
+
+@keyframes endear-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(0.15em);
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes endear-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+  75% {
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes endear-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0.6em);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes endear-glow {
+  0% {
+    opacity: 0;
+    text-shadow: 0 0 24px rgba(201, 94, 132, 0.9);
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 0 rgba(201, 94, 132, 0);
+  }
+}
+
+@keyframes endear-breathe {
+  0% {
+    opacity: 0;
+    transform: scale(1);
+    letter-spacing: 0.06em;
+  }
+  22% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+  46% {
+    transform: scale(1);
+    letter-spacing: -0.025em;
+  }
+  64% {
+    transform: scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes endear-shards-word {
+  0% {
+    opacity: 0;
+    transform: translateX(-0.7em);
+  }
+  35% {
+    opacity: 1;
+    transform: translateX(0.06em);
+  }
+  50% {
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes endear-shard {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+  15% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1);
   }
 }
 

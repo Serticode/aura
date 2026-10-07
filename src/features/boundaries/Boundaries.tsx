@@ -72,7 +72,7 @@ export function Boundaries() {
         <button
           type="button"
           onClick={() => navigate('/hearth')}
-          className="w-full rounded-full bg-mulberry py-3 text-base font-semibold text-ivory transition-colors duration-200 ease-ambient hover:bg-rose-deep active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
+          className="btn-wave w-full rounded-full bg-mulberry py-3 text-base font-semibold text-ivory transition-colors duration-200 ease-ambient active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
         >
           Continue
         </button>
