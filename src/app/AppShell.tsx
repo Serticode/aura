@@ -15,7 +15,8 @@ export function AppShell() {
       </main>
       <nav
         aria-label="Spaces"
-        className="fixed inset-x-0 bottom-0 mx-auto flex w-full max-w-md justify-around border-t border-earth/10 bg-cream py-2"
+        className="animate-fade fixed inset-x-0 bottom-0 mx-auto flex w-full max-w-md justify-around border-t border-earth/10 bg-cream py-2"
+        style={{ animationDelay: '400ms' }}
       >
         {spaces.map((space) => (
           <NavLink
@@ -23,9 +24,10 @@ export function AppShell() {
             to={space.to}
             end={space.to === '/'}
             className={({ isActive }) =>
-              isActive
-                ? 'rounded-full bg-terracotta/15 px-4 py-2 text-sm font-medium text-terracotta'
-                : 'rounded-full px-4 py-2 text-sm text-earth hover:bg-earth/5'
+              [
+                'rounded-full px-4 py-2 text-sm transition-colors duration-200 ease-ambient active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta',
+                isActive ? 'bg-terracotta/15 font-medium text-terracotta' : 'text-earth hover:bg-earth/5',
+              ].join(' ')
             }
           >
             {space.label}
