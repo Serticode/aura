@@ -7,4 +7,70 @@
   --color-earth: #6b5b4e;
   --color-cream: #f7f1e7;
   --color-ink: #3b342e;
+
+  --ease-ambient: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-breathe: breathe 5s ease-in-out infinite;
+  --animate-glow: glow 5s ease-in-out infinite;
+  --animate-rise: rise 600ms var(--ease-ambient) both;
+  --animate-fade: fade 450ms ease-out both;
+
+  @keyframes breathe {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes glow {
+    0%,
+    100% {
+      opacity: 0.45;
+    }
+    50% {
+      opacity: 0.9;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+@utility landing-wash {
+  background-image: radial-gradient(
+    90% 85% at 50% -10%,
+    color-mix(in srgb, var(--color-terracotta) 12%, transparent),
+    transparent 70%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
