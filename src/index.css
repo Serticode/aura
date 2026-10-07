@@ -10,18 +10,45 @@
 
   --ease-ambient: cubic-bezier(0.22, 1, 0.36, 1);
 
-  --animate-breathe: breathe 5s ease-in-out infinite;
+  --animate-blob: blob 7s ease-in-out infinite;
   --animate-glow: glow 5s ease-in-out infinite;
+  --animate-drift: drift 7s ease-in-out infinite;
+  --animate-orbit: orbit 9s linear infinite;
   --animate-rise: rise 600ms var(--ease-ambient) both;
   --animate-fade: fade 450ms ease-out both;
 
-  @keyframes breathe {
+  @keyframes blob {
     0%,
     100% {
-      transform: scale(1);
+      border-radius: 42% 58% 55% 45% / 55% 45% 58% 42%;
+    }
+    25% {
+      border-radius: 58% 42% 45% 55% / 45% 55% 42% 58%;
     }
     50% {
-      transform: scale(1.05);
+      border-radius: 48% 52% 60% 40% / 40% 60% 52% 48%;
+    }
+    75% {
+      border-radius: 55% 45% 48% 52% / 60% 40% 45% 55%;
+    }
+  }
+
+  @keyframes drift {
+    0%,
+    100% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 100% 100%;
+    }
+  }
+
+  @keyframes orbit {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
     }
   }
 
