@@ -14,10 +14,10 @@ export function Greeting() {
         <div className="animate-rise">
           <Orb />
         </div>
-        <h1 className="animate-rise mt-12 text-3xl font-medium tracking-tight text-ink" style={{ animationDelay: '90ms' }}>
+        <h1 className="animate-rise mt-12 font-display text-3xl font-medium tracking-tight text-mulberry" style={{ animationDelay: '90ms' }}>
           How does today feel?
         </h1>
-        <p className="animate-rise mt-2 max-w-xs text-base text-earth" style={{ animationDelay: '150ms' }}>
+        <p className="animate-rise mt-2 max-w-xs text-base text-charcoal/80" style={{ animationDelay: '150ms' }}>
           Name it, rate it on the slider, or simply skip. There is no wrong answer.
         </p>
       </div>
@@ -34,10 +34,10 @@ export function Greeting() {
                 onClick={() => setMood(option)}
                 className={
                   [
-                    'rounded-full border px-4 py-2 text-sm transition-colors duration-200 ease-ambient active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta',
+                    'rounded-full border px-4 py-2 text-sm transition-colors duration-200 ease-ambient active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose',
                     selected
-                      ? 'border-terracotta bg-terracotta/15 font-medium text-terracotta'
-                      : 'border-earth/20 bg-white/60 text-earth hover:border-earth/40',
+                      ? 'border-rose bg-rose/15 font-medium text-rose-deep'
+                      : 'border-earth/20 bg-white/60 text-charcoal/70 hover:border-rose/40',
                   ].join(' ')
                 }
               >
@@ -48,7 +48,7 @@ export function Greeting() {
         </div>
 
         <div className="mt-10">
-          <label htmlFor="weight" className="flex justify-between text-sm text-earth">
+          <label htmlFor="weight" className="flex justify-between text-sm text-charcoal/70">
             <span>Gentle</span>
             <span>Heavy</span>
           </label>
@@ -59,7 +59,7 @@ export function Greeting() {
             max={100}
             defaultValue={50}
             aria-label="How heavy does today feel?"
-            className="mt-2 w-full accent-terracotta"
+            className="mt-2 w-full accent-rose"
           />
         </div>
       </div>
@@ -68,13 +68,13 @@ export function Greeting() {
         <button
           type="button"
           onClick={() => navigate('/boundaries')}
-          className="w-full rounded-full bg-terracotta py-3 text-base font-medium text-cream transition-colors duration-200 ease-ambient hover:bg-terracotta/90 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta"
+          className="w-full rounded-full bg-mulberry py-3 text-base font-semibold text-ivory transition-colors duration-200 ease-ambient hover:bg-rose-deep active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
         >
           Continue
         </button>
         <Link
           to="/boundaries"
-          className="mt-4 block text-center text-sm text-earth underline-offset-4 hover:underline"
+          className="text-link mx-auto mt-4 block w-fit text-center text-sm"
         >
           Skip for now
         </Link>

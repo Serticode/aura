@@ -8,17 +8,17 @@ function Heart({ className }: { className: string }) {
 
 export function Attribution() {
   return (
-    <footer className="fixed inset-x-0 bottom-0 z-10 flex h-8 w-full items-center justify-between border-t border-earth/10 bg-cream px-6">
+    <footer className="fixed inset-x-0 bottom-0 z-10 flex h-8 w-full items-center justify-between border-t border-earth/10 bg-ivory px-6">
       <a
         href="https://portfolio.serticode.com"
         target="_blank"
         rel="noopener noreferrer"
-        className="group inline-flex items-center gap-1 text-xs text-earth transition-colors duration-200 ease-ambient hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta"
+        className="group text-link inline-flex items-center gap-1 text-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose [--link-from:color-mix(in_srgb,var(--color-charcoal)_60%,transparent)] [--link-to:var(--color-charcoal)]"
       >
         <Heart className="h-3 w-3 text-plum transition-transform duration-300 ease-ambient group-hover:animate-heartbeat" />
         <span>Built by Serticode</span>
       </a>
-      <span className="inline-flex items-center gap-1 text-xs text-earth">
+      <span className="inline-flex items-center gap-1 text-xs text-charcoal/60">
         <span>Built for Àyà mí</span>
         <span className="animate-gbim inline-block text-sm leading-none" role="img" aria-label="hibiscus flower">
           🌺

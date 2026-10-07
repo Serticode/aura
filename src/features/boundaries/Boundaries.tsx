@@ -35,12 +35,12 @@ export function Boundaries() {
     <section className="animate-rise flex flex-1 flex-col justify-center px-6 py-16">
       <Link
         to="/"
-        className="mb-6 inline-flex w-fit items-center gap-1 text-sm text-earth underline-offset-4 transition-colors duration-200 ease-ambient hover:text-ink hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta"
+        className="text-link mb-6 inline-flex w-fit items-center gap-1 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
       >
         <span aria-hidden="true">←</span> Back to the landing
       </Link>
-      <h1 className="text-3xl font-medium tracking-tight text-ink">What kind of support feels right?</h1>
-      <p className="mt-2 text-base text-earth">Choose any that fit. You can change them anytime.</p>
+      <h1 className="font-display text-3xl font-medium tracking-tight text-mulberry">What kind of support feels right?</h1>
+      <p className="mt-2 text-base text-charcoal/80">Choose any that fit. You can change them anytime.</p>
 
       <div className="mt-8 flex flex-col gap-3">
         {preferences.map((preference, index) => {
@@ -53,16 +53,16 @@ export function Boundaries() {
               onClick={() => togglePreference(preference.id)}
               className={
                 [
-                  'animate-rise rounded-2xl border p-4 text-left transition-colors duration-200 ease-ambient active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta',
+                  'animate-rise rounded-2xl border p-4 text-left transition-colors duration-200 ease-ambient active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose',
                   selected
-                    ? 'border-terracotta bg-terracotta/10'
-                    : 'border-earth/15 bg-white/60 hover:border-earth/35',
+                    ? 'border-rose bg-rose/10'
+                    : 'border-earth/15 bg-white/60 hover:border-rose/40',
                 ].join(' ')
               }
               style={{ animationDelay: `${100 + index * 90}ms` }}
             >
-              <span className="block text-lg font-medium text-ink">{preference.title}</span>
-              <span className="mt-1 block text-sm text-earth">{preference.description}</span>
+              <span className="block text-lg font-semibold text-charcoal">{preference.title}</span>
+              <span className="mt-1 block text-sm text-charcoal/70">{preference.description}</span>
             </button>
           )
         })}
@@ -72,11 +72,11 @@ export function Boundaries() {
         <button
           type="button"
           onClick={() => navigate('/hearth')}
-          className="w-full rounded-full bg-terracotta py-3 text-base font-medium text-cream transition-colors duration-200 ease-ambient hover:bg-terracotta/90 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta"
+          className="w-full rounded-full bg-mulberry py-3 text-base font-semibold text-ivory transition-colors duration-200 ease-ambient hover:bg-rose-deep active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
         >
           Continue
         </button>
-        <Link to="/mirror" className="mt-4 block text-center text-sm text-earth underline-offset-4 hover:underline">
+        <Link to="/mirror" className="text-link mx-auto mt-4 block w-fit text-center text-sm">
           Skip for now
         </Link>
       </div>

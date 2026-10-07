@@ -1,14 +1,55 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Fraunces Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Fraunces Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/fraunces/files/fraunces-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Manrope Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url("@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Manrope Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url("@fontsource-variable/manrope/files/manrope-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 @theme {
-  --color-terracotta: #c96f4a;
-  --color-dusk-rose: #d9a0a0;
-  --color-ochre: #c9973d;
+  --color-rose: #c95e84;
+  --color-rose-deep: #b44e75;
+  --color-mulberry: #593348;
+  --color-petal: #e8c6cb;
+  --color-ivory: #faf6f0;
+  --color-charcoal: #302a2d;
+  --color-ochre: #c49a50;
+  --color-green: #526653;
   --color-earth: #6b5b4e;
-  --color-cream: #f7f1e7;
-  --color-ink: #3b342e;
   --color-plum: #8b5aa8;
-  --color-crimson: #d94f4f;
+
+  --font-sans: "Manrope Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces Variable", ui-serif, Georgia, serif;
 
   --ease-ambient: cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -132,11 +173,54 @@
 }
 
 @utility landing-wash {
-  background-image: radial-gradient(
-    90% 85% at 50% -10%,
-    color-mix(in srgb, var(--color-terracotta) 12%, transparent),
-    transparent 70%
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-rose) 10%, transparent),
+    transparent 20%
   );
+}
+
+@utility text-link {
+  --link-from: var(--color-earth);
+  --link-to: var(--color-rose-deep);
+
+  position: relative;
+  background-image: linear-gradient(to right, var(--link-to) 50%, var(--link-from) 50%);
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  transition:
+    background-position 600ms var(--ease-ambient),
+    font-weight 300ms var(--ease-ambient);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -3px;
+    height: 2px;
+    background: var(--link-to);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 600ms var(--ease-ambient);
+  }
+
+  &:hover {
+    background-position: 0 0;
+    font-weight: 500;
+  }
+
+  &:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
