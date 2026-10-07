@@ -14,11 +14,12 @@ const onboardingPaths = ["/", "/boundaries"] as const;
 export function AppShell() {
 	const location = useLocation();
 	const inOnboarding = onboardingPaths.some((path) => path === location.pathname);
+	const isGreeting = location.pathname === "/";
 
 	return (
 		<div className="min-h-screen bg-ivory text-charcoal">
 			<BrandHeader />
-			<main className="mx-auto flex min-h-screen w-full max-w-md flex-col">
+			<main className={`mx-auto flex min-h-screen w-full flex-col${isGreeting ? "" : " max-w-md"}`}>
 				<Outlet />
 			</main>
 			{!inOnboarding && (

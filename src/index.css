@@ -248,6 +248,18 @@
   z-index: 0;
 }
 
+.endear-ending {
+  display: inline-flex;
+  align-items: baseline;
+  vertical-align: baseline;
+  gap: 0.08em;
+  white-space: nowrap;
+}
+
+.endear-ending > span {
+  flex: none;
+}
+
 .endear-word-text {
   display: inline-block;
   position: relative;
@@ -282,7 +294,7 @@
   animation: endear-shards-word 1100ms var(--ease-ambient) both;
 }
 
-.endear-shards {
+.endear-particles {
   position: absolute;
   inset: 50% auto auto 50%;
   z-index: 0;
