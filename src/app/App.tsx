@@ -1,5 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import { AppShell } from '@/app/AppShell'
+import { Greeting } from '@/features/greeting/Greeting'
+import { Boundaries } from '@/features/boundaries/Boundaries'
 import { Hearth } from '@/features/hearth/Hearth'
 import { Mirror } from '@/features/mirror/Mirror'
 import { Pulse } from '@/features/pulse/Pulse'
@@ -9,7 +11,9 @@ export function App() {
   return (
     <Routes>
       <Route element={<AppShell />}>
-        <Route index element={<Hearth />} />
+        <Route index element={<Greeting />} />
+        <Route path="boundaries" element={<Boundaries />} />
+        <Route path="hearth" element={<Hearth />} />
         <Route path="mirror" element={<Mirror />} />
         <Route path="pulse" element={<Pulse />} />
         <Route path="gathering" element={<Gathering />} />

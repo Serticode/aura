@@ -70,7 +70,7 @@ export function Boundaries() {
         >
           Continue
         </button>
-        <Link to="/hearth" className="mt-4 block text-center text-sm text-earth underline-offset-4 hover:underline">
+        <Link to="/mirror" className="mt-4 block text-center text-sm text-earth underline-offset-4 hover:underline">
           Skip for now
         </Link>
       </div>
