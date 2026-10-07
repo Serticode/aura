@@ -37,6 +37,7 @@
 }
 
 @theme {
+  --color-danger: #d92525;
   --color-rose: #c95e84;
   --color-rose-deep: #b44e75;
   --color-mulberry: #593348;
@@ -197,7 +198,7 @@
 
 @utility text-link {
   --link-from: var(--color-earth);
-  --link-to: var(--color-rose-deep);
+  --link-to: var(--link-accent, var(--color-rose-deep));
 
   position: relative;
   background-image: linear-gradient(to right, var(--link-to) 50%, var(--link-from) 50%);
