@@ -7,6 +7,10 @@ test.describe('Accessible private pilot', () => {
     for (const route of ['/', '/mirror', '/settings']) {
       await page.goto(route)
       await page.getByRole('heading', { level: 1 }).waitFor()
+      await page.evaluate(async () => {
+        await document.fonts.ready
+        await new Promise<void>((done) => requestAnimationFrame(() => requestAnimationFrame(() => done())))
+      })
       const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze()
       expect(results.violations.map(({ id, nodes }) => ({ id, targets: nodes.map(({ target }) => target) }))).toEqual([])
     }
@@ -27,6 +31,11 @@ test.describe('Accessible private pilot', () => {
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
       }
     }
+    await page.goto('/')
+    expect(await page.locator('.animate-blob').evaluate((orb) => {
+      const radius = getComputedStyle(orb).borderTopLeftRadius
+      return radius.endsWith('%') ? parseFloat(radius) >= 50 : parseFloat(radius) >= orb.clientWidth / 2
+    })).toBe(true)
     await page.goto('/mirror')
     await page.getByRole('textbox').fill('A moment to pause')
     await page.getByRole('button', { name: 'Release', exact: true }).click()

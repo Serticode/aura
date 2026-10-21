@@ -36,7 +36,7 @@ export function AppShell() {
 							className={({ isActive }) =>
 								[
 									"rounded-full px-4 py-2 text-sm transition-colors duration-200 ease-ambient active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose",
-									isActive ? "bg-rose/15 font-medium text-rose-deep" : "text-earth hover:bg-rose/5",
+									isActive ? "bg-rose/15 font-medium text-mulberry" : "text-earth hover:bg-rose/5",
 								].join(" ")
 							}>
 							{space.label}
