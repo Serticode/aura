@@ -1,34 +1,49 @@
 # Aura
 
-A quiet space to express how today feels — with gentle words and the choice to connect.
+Aura is a private expression prototype for adults. The Mirror pilot lets you write, choose optional feelings, release privately, and save curated words. The acknowledgment bank remains draft content pending human editorial approval.
 
-Aura is an emotional support app for adults navigating difficult moods. It combines private expression (Mirror), a low-effort collective check-in (Pulse), and supportive prompted conversation (Gathering).
+## Pilot scope
 
-## Stack
+- Greeting passes optional moods into Mirror through memory.
+- Mirror writing stays in memory and has no server, AI, telemetry, or history path.
+- Saved words store curated response identifiers only.
+- Settings saves device preferences, supports reduced motion, and clears local Aura data.
+- Offline Mirror works after the first successful online load. App updates require an explicit action in Settings.
 
-- Vite + React + TypeScript (strict)
-- Tailwind CSS v4
-- vite-plugin-pwa (offline shell)
-- Supabase, GraphQL, or a managed backend for community features (added in a later phase)
+Pulse and Gathering remain future work and are hidden from pilot navigation. Sound playback is unavailable. Quiet expression controls Mirror’s default response mode; other support choices only record interest in future features.
 
-## Development
+## Develop
 
-```bash
-npm install
+The verified runtime is Node.js 26.10.0. The app uses Vite, React, strict TypeScript, Tailwind CSS v4, Dexie, and vite-plugin-pwa.
+
+```sh
+npm ci
 npm run dev
 ```
 
-| Command           | Purpose                         |
-| ----------------- | ------------------------------- |
-| `npm run dev`     | Local development server        |
-| `npm run build`   | Type-check and production build |
-| `npm run lint`    | OXLint                          |
-| `npm run preview` | Preview the production build    |
+## Verify
 
-## Spaces
+Install browser binaries before the first test run:
 
-- **Mirror** — private, local-only expression with curated acknowledgment
-- **Pulse** — one daily poll with honest aggregate results
-- **Gathering** — daily prompted conversation, bounded and moderated
+```sh
+npx playwright install chromium firefox webkit
+npm test
+npm run lint
+npm audit
+```
 
-See the [Aura product documentation](https://github.com/Serticode/aura) for the full specification.
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the development server |
+| `npm run build` | Type-check app, configuration, and tests; build production assets |
+| `npm test` | Build and run browser regression, accessibility, PWA, and desktop diagnostic checks |
+| `npm run lint` | Run OXLint |
+| `npm run preview` | Serve the production build locally |
+
+The tests need port 4185 and isolated browser storage. Screenshots, traces, and video are disabled; generated reports are ignored by Git. Use synthetic writing only.
+
+## Prepare a pilot release
+
+Follow [Verify the private Mirror pilot](docs/verify-pilot.md) for privacy checks, manual accessibility work, host configuration, update recovery, and release evidence. Use [Approve Mirror acknowledgments](docs/content-review.md) to record human content approval.
+
+Automated checks do not replace VoiceOver testing, physical-device measurements, installed-browser verification, or live-host checks. No production deployment is recorded by this repository change.

@@ -1,3 +1,8 @@
+---
+meta:
+  contentType: How-to
+---
+
 # Approve Mirror acknowledgments
 
 The private pilot uses four curated drafts. Source review found no diagnosis, recovery promise, follow-up question, or inferred medical cause in this copy. Human editorial approval is still pending; the app continues to label the words as prototype content.

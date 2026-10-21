@@ -1,3 +1,8 @@
+---
+meta:
+  contentType: How-to
+---
+
 # Verify the private Mirror pilot
 
 Run these checks before sharing a release candidate. The pilot contains Greeting, Mirror, saved words, and Settings. Pulse and Gathering are absent from navigation; their old routes redirect to Mirror. Sound playback and preference-specific interventions remain deferred.
