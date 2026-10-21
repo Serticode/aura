@@ -1,37 +1,40 @@
+import { AppUpdate } from '@/app/AppUpdate';
+import { usePreferences } from '@/data/usePreferences';
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { Attribution } from "@/components/Attribution";
 import { BrandHeader } from "@/components/BrandHeader";
 
 const spaces = [
-	{ to: "/hearth", label: "Hearth" },
 	{ to: "/mirror", label: "Mirror" },
 	{ to: "/pulse", label: "Pulse" },
 	{ to: "/gathering", label: "Gathering" },
+	{ to: "/settings", label: "Settings" },
 ] as const;
 
-const onboardingPaths = ["/", "/boundaries"] as const;
+const onboardingPaths = ["/"] as const;
 
 export function AppShell() {
 	const location = useLocation();
+	const { flags } = usePreferences();
 	const inOnboarding = onboardingPaths.some((path) => path === location.pathname);
-	const isGreeting = location.pathname === "/";
+	const isWideCanvas = location.pathname === "/" || location.pathname === "/settings" || location.pathname === "/mirror";
 
 	return (
-		<div className="min-h-screen bg-ivory text-charcoal">
+		<div data-reduced-motion={flags.reducedMotion === true} className="min-h-screen bg-ivory text-charcoal">
 			<BrandHeader />
-			<main className={`mx-auto flex min-h-screen w-full flex-col${isGreeting ? "" : " max-w-md"}`}>
+			<main className={`mx-auto flex min-h-screen w-full flex-col${isWideCanvas ? "" : " max-w-md"}`}>
 				<Outlet />
 			</main>
 			{!inOnboarding && (
 				<nav
 					aria-label="Spaces"
-					className="animate-fade fixed inset-x-0 bottom-8 mx-auto flex w-full max-w-md justify-around border-t border-earth/10 bg-ivory py-2"
+					className="animate-fade fixed inset-x-0 bottom-8 mx-auto flex w-full max-w-xl justify-around border-t border-earth/10 bg-ivory py-2"
 					style={{ animationDelay: "400ms" }}>
 					{spaces.map((space) => (
 						<NavLink
 							key={space.to}
 							to={space.to}
-							end={space.to === "/hearth"}
+							end
 							className={({ isActive }) =>
 								[
 									"rounded-full px-4 py-2 text-sm transition-colors duration-200 ease-ambient active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose",
@@ -43,6 +46,7 @@ export function AppShell() {
 					))}
 				</nav>
 			)}
+			<AppUpdate />
 			<Attribution />
 		</div>
 	);
