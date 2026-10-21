@@ -18,12 +18,12 @@ npm install
 npm run dev
 ```
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Local development server |
-| `npm run build` | Type-check and production build |
-| `npm run lint` | OXLint |
-| `npm run preview` | Preview the production build |
+| Command           | Purpose                         |
+| ----------------- | ------------------------------- |
+| `npm run dev`     | Local development server        |
+| `npm run build`   | Type-check and production build |
+| `npm run lint`    | OXLint                          |
+| `npm run preview` | Preview the production build    |
 
 ## Spaces
 

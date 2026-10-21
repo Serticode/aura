@@ -9,14 +9,14 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Aura',
         short_name: 'Aura',
         description: 'A quiet space to express how today feels.',
-        theme_color: '#f7f1e7',
-        background_color: '#f7f1e7',
+        theme_color: '#FAF6F0',
+        background_color: '#FAF6F0',
         display: 'standalone',
         start_url: '/',
         icons: [

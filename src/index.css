@@ -501,3 +501,16 @@
     scroll-behavior: auto !important;
   }
 }
+
+@keyframes release-petal {
+  from { opacity: 0.8; transform: translate(0, 0) scale(1); }
+  to { opacity: 0; transform: translate(var(--petal-x), var(--petal-y)) scale(0.2); }
+}
+.release-petal { animation: release-petal 500ms var(--ease-ambient) both; }
+[data-reduced-motion="true"] *,
+[data-reduced-motion="true"] *::before,
+[data-reduced-motion="true"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
