@@ -47,6 +47,22 @@ const test = base.extend<{ candidate: CandidateServer }>({
 })
 
 test.describe('Production PWA', () => {
+  test('serves direct routes, install metadata, icons, and security headers', async ({ request, candidate }) => {
+    for (const route of ['/mirror', '/settings']) {
+      const response = await request.get(`${candidate.url}${route}`)
+      expect(response.status()).toBe(200)
+      expect(response.headers()['content-security-policy']).toContain("script-src 'self'")
+      expect(response.headers()['x-content-type-options']).toBe('nosniff')
+      expect(response.headers()['referrer-policy']).toBe('no-referrer')
+    }
+    const response = await request.get(`${candidate.url}/manifest.webmanifest`)
+    const manifest: unknown = await response.json()
+    expect(manifest).toMatchObject({ name: 'Aura', display: 'standalone', start_url: '/' })
+    for (const icon of ['pwa-192x192.png', 'pwa-512x512.png', 'apple-touch-icon.png']) {
+      expect((await request.get(`${candidate.url}/${icon}`)).status()).toBe(200)
+    }
+  })
+
   test('works offline after first load and keeps saved identifiers after offline reload', async ({ page, context, candidate }) => {
     await page.goto(`${candidate.url}/mirror`)
     await page.evaluate(() => navigator.serviceWorker.ready.then(() => undefined))
