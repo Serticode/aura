@@ -88,13 +88,13 @@ export function Greeting() {
 				</div>
 				<div className="mt-10 flex flex-wrap items-center justify-between gap-6">
 					<Link
-						to="/boundaries"
+						to="/mirror"
 						className="text-link py-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose">
 						Skip for now
 					</Link>
 					<button
 						type="button"
-						onClick={() => navigate("/boundaries")}
+						onClick={() => navigate("/mirror")}
 						className="btn-wave flex min-h-12 items-center justify-between gap-12 rounded-full bg-mulberry px-8 py-3.5 text-base font-semibold text-ivory transition-transform duration-150 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose">
 						Continue <span aria-hidden="true">→</span>
 					</button>
