@@ -1,13 +1,13 @@
 import { usePreferences } from '@/data/usePreferences'
 
 export const supportPreferences = [
-  { id: 'encouragement', title: 'Encouragement', description: 'Warm, kind words and gentle reassurance.' },
+  { id: 'encouragement', title: 'Encouragement', description: 'Future preference · Encouragement choices do not change Mirror yet.' },
   { id: 'quiet', title: 'Quiet expression', description: 'A space to let feelings out without a reply.' },
-  { id: 'shared', title: 'Shared experience', description: 'To know others feel this way too.' },
-  { id: 'validation', title: 'Feeling heard', description: 'Acknowledgment without trying to fix how you feel.' },
-  { id: 'reflection', title: 'Room to reflect', description: 'Gentle prompts to help you find your own words.' },
-  { id: 'grounding', title: 'A moment to settle', description: 'Simple invitations to pause and notice the present.' },
-  { id: 'perspective', title: 'A fresh perspective', description: 'Another way to look at things, when you feel ready.' },
+  { id: 'shared', title: 'Shared experience', description: 'Future preference · Shared experiences are not available in this pilot.' },
+  { id: 'validation', title: 'Feeling heard', description: 'Future preference · Feeling heard does not change Mirror yet.' },
+  { id: 'reflection', title: 'Room to reflect', description: 'Future preference · Reflection prompts are not available in this pilot.' },
+  { id: 'grounding', title: 'A moment to settle', description: 'Future preference · Grounding invitations are not available in this pilot.' },
+  { id: 'perspective', title: 'A fresh perspective', description: 'Future preference · Perspective prompts are not available in this pilot.' },
 ] as const
 
 

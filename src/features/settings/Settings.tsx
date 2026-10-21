@@ -4,7 +4,7 @@ import { usePlatformSounds } from "@/features/settings/usePlatformSounds";
 
 export function Settings() {
 	const { chosen, togglePreference, saveStatus, ready } = useSupportPreferences();
-	const { enabled, toggleSounds, saveError, ready: soundReady } = usePlatformSounds();
+	const { enabled, toggleSounds, saveError } = usePlatformSounds();
 
 	return (
 		<section className="animate-rise mx-auto w-full max-w-6xl px-8 pt-24 pb-36 md:px-12 lg:px-16">
@@ -17,7 +17,7 @@ export function Settings() {
 				<div>
 					<h2 className="text-base font-semibold text-charcoal">Your support</h2>
 					<p className="mt-2 text-sm leading-relaxed text-earth">
-						What feels right for you? Choose any that fit, and change them whenever you like.
+						Quiet expression sets Mirror’s default. Other choices save your interest in future support; they don’t change this pilot.
 					</p>
 				</div>
 				<div>
@@ -78,13 +78,13 @@ export function Settings() {
 								Platform sounds
 							</h3>
 							<p id="platform-sounds-description" className="mt-1 text-sm leading-relaxed text-earth">
-								Gentle sounds for actions in Aura. Sound effects are coming soon.
+								Sound playback is unavailable in this pilot. Your saved preference is kept for a future version.
 							</p>
 						</div>
 						<button
 							type="button"
 							role="switch"
-							disabled={!soundReady}
+							disabled
 							aria-checked={enabled}
 							aria-labelledby="platform-sounds-label"
 							aria-describedby="platform-sounds-description"
