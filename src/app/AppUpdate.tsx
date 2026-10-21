@@ -13,14 +13,21 @@ export function AppUpdate() {
     let active = true
     apply.current = registerSW({
       onNeedRefresh: () => { if (active) setState('waiting') },
-      onNeedReload: () => {
-        if (!active) return
-        if (requested.current) window.location.reload()
-        else setState('activated')
-      },
+      onNeedReload: () => { if (active && !requested.current) setState('activated') },
       onRegisterError: () => { if (active) setState('error') },
     })
-    return () => { active = false }
+    let controlled = 'serviceWorker' in navigator && navigator.serviceWorker.controller !== null
+    const controllerChanged = () => {
+      if (!active) return
+      if (requested.current) window.location.reload()
+      else if (controlled) setState('activated')
+      controlled = true
+    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('controllerchange', controllerChanged)
+    return () => {
+      active = false
+      if ('serviceWorker' in navigator) navigator.serviceWorker.removeEventListener('controllerchange', controllerChanged)
+    }
   }, [])
 
   async function update() {

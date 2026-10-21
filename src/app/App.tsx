@@ -5,8 +5,6 @@ import { AppShell } from '@/app/AppShell'
 import { Greeting } from '@/features/greeting/Greeting'
 import { Settings } from '@/features/settings/Settings'
 import { Mirror } from '@/features/mirror/Mirror'
-import { Pulse } from '@/features/pulse/Pulse'
-import { Gathering } from '@/features/gathering/Gathering'
 
 export function App() {
   const [greetingMoods, setGreetingMoods] = useState<readonly Mood[]>([])
@@ -20,8 +18,8 @@ export function App() {
         <Route path="settings" element={<Settings />} />
         <Route path="hearth" element={<Navigate to="/mirror" replace />} />
         <Route path="mirror" element={<Mirror initialMoods={greetingMoods} onGreetingConsumed={clearGreetingMoods} />} />
-        <Route path="pulse" element={<Pulse />} />
-        <Route path="gathering" element={<Gathering />} />
+        <Route path="pulse" element={<Navigate to="/mirror" replace />} />
+        <Route path="gathering" element={<Navigate to="/mirror" replace />} />
       </Route>
     </Routes>
   )

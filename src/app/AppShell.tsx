@@ -6,8 +6,6 @@ import { BrandHeader } from "@/components/BrandHeader";
 
 const spaces = [
 	{ to: "/mirror", label: "Mirror" },
-	{ to: "/pulse", label: "Pulse" },
-	{ to: "/gathering", label: "Gathering" },
 	{ to: "/settings", label: "Settings" },
 ] as const;
 

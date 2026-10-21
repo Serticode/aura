@@ -1,0 +1,103 @@
+import { createServer } from 'node:http'
+import { readFile } from 'node:fs/promises'
+import { resolve, extname } from 'node:path'
+import { test as base, expect } from '@playwright/test'
+
+interface CandidateServer {
+  readonly url: string
+  readonly publish: (version: string) => void
+  readonly failUpdates: (fail: boolean) => void
+}
+
+const test = base.extend<{ candidate: CandidateServer }>({
+  candidate: async ({ baseURL }, provide) => {
+    if (!baseURL) throw new Error('Expected configured preview URL')
+    let version = 'initial'
+    let fail = false
+    const types: Readonly<Record<string, string>> = {
+      '.js': 'application/javascript', '.html': 'text/html', '.css': 'text/css',
+      '.json': 'application/json', '.webmanifest': 'application/manifest+json',
+      '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2',
+    }
+    const headerFile = await readFile('public/_headers', 'utf8')
+    const headers = Object.fromEntries(headerFile.split('\n').filter((line) => line.startsWith('  ') && !line.trim().startsWith('Cache-Control')).map((line) => {
+      const colon = line.indexOf(':')
+      return [line.slice(0, colon).trim(), line.slice(colon + 1).trim()]
+    }))
+    const server = createServer(async (request, response) => {
+      const pathname = new URL(request.url ?? '/', 'http://localhost').pathname
+      const asset = extname(pathname) ? pathname : '/index.html'
+      if (asset === '/sw.js' && fail) { response.writeHead(503); response.end(); return }
+      try {
+        let body = await readFile(resolve('dist', `.${asset}`))
+        if (asset === '/sw.js') body = Buffer.from(body.toString().replace(/url:"index.html",revision:"[^"]+"/, `url:"index.html",revision:"${version}"`))
+        if (asset === '/index.html') body = Buffer.from(body.toString().replace('</head>', `<meta name="candidate-version" content="${version}"></head>`))
+        response.writeHead(200, { ...headers, 'Content-Type': types[extname(asset)] ?? 'application/octet-stream', 'Cache-Control': 'no-store' })
+        response.end(body)
+      } catch {
+        response.writeHead(404); response.end()
+      }
+    })
+    await new Promise<void>((done) => server.listen(0, '127.0.0.1', done))
+    const address = server.address()
+    if (address === null || typeof address === 'string') throw new Error('Expected TCP test server')
+    await provide({ url: `http://127.0.0.1:${address.port}`, publish: (next) => { version = next }, failUpdates: (next) => { fail = next } })
+    await new Promise<void>((done, reject) => server.close((error) => error ? reject(error) : done()))
+  },
+})
+
+test.describe('Production PWA', () => {
+  test('works offline after first load and keeps saved identifiers after offline reload', async ({ page, context, candidate }) => {
+    await page.goto(`${candidate.url}/mirror`)
+    await page.evaluate(() => navigator.serviceWorker.ready.then(() => undefined))
+    await page.reload()
+    await expect.poll(() => page.evaluate(() => navigator.serviceWorker.controller !== null)).toBe(true)
+    await context.setOffline(true)
+    await page.reload()
+    await page.getByRole('textbox').fill('An offline thought')
+    await page.getByRole('button', { name: 'Release', exact: true }).click()
+    await page.getByRole('button', { name: 'Save affirmation', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Remove saved affirmation', exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await page.reload()
+    await page.getByRole('button', { name: 'Saved words (1)', exact: true }).click()
+    await expect(page.getByText('Thank you for making space for what you feel.', { exact: true })).toBeVisible()
+  })
+
+  test('waits for explicit updates, preserves another tab draft, and supports rollback', async ({ page, context, candidate }) => {
+    await page.goto(`${candidate.url}/settings`)
+    await page.evaluate(() => navigator.serviceWorker.ready.then(() => undefined))
+    const writer = await context.newPage()
+    await writer.goto(`${candidate.url}/mirror`)
+    await writer.getByRole('textbox').fill('Keep this draft through another tab update')
+    candidate.publish('second')
+    await page.evaluate(async () => { const registration = await navigator.serviceWorker.ready; await registration.update() })
+    await expect(page.getByRole('button', { name: 'Update Aura', exact: true })).toBeVisible()
+    await expect(writer.getByRole('textbox')).toHaveValue('Keep this draft through another tab update')
+    await page.getByRole('button', { name: 'Update Aura', exact: true }).click()
+    await expect(page.locator('meta[name="candidate-version"]')).toHaveAttribute('content', 'second')
+    await expect(writer.getByRole('textbox')).toHaveValue('Keep this draft through another tab update')
+    candidate.publish('initial')
+    await page.evaluate(async () => { const registration = await navigator.serviceWorker.ready; await registration.update() })
+    await expect(page.getByRole('button', { name: 'Update Aura', exact: true })).toBeVisible()
+    await page.getByRole('button', { name: 'Update Aura', exact: true }).click()
+    await expect(page.locator('meta[name="candidate-version"]')).toHaveAttribute('content', 'initial')
+    await expect(writer.getByRole('textbox')).toHaveValue('Keep this draft through another tab update')
+  })
+
+  test('retains the working app after an update fetch fails', async ({ page, candidate }) => {
+    await page.goto(`${candidate.url}/mirror`)
+    await page.evaluate(() => navigator.serviceWorker.ready.then(() => undefined))
+    await page.getByRole('textbox').fill('Keep writing while updates fail')
+    candidate.failUpdates(true)
+    const failed = await page.evaluate(async () => {
+      const registration = await navigator.serviceWorker.ready
+      try { await registration.update(); return false } catch { return true }
+    })
+    expect(failed).toBe(true)
+    await expect(page.getByRole('textbox')).toHaveValue('Keep writing while updates fail')
+    candidate.failUpdates(false)
+    candidate.publish('recovered')
+    await page.evaluate(async () => { const registration = await navigator.serviceWorker.ready; await registration.update() })
+    await expect(page.getByRole('link', { name: 'Update in Settings' })).toBeVisible()
+  })
+})
