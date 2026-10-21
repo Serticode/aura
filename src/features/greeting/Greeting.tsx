@@ -4,7 +4,11 @@ import { Endearment } from "@/components/Endearment";
 import { Orb } from "@/components/Orb";
 import { moods, type Mood } from "@/app/moods";
 
-export function Greeting() {
+interface GreetingProps {
+	readonly onContinue: (moods: readonly Mood[]) => void;
+}
+
+export function Greeting({ onContinue }: GreetingProps) {
 	const navigate = useNavigate();
 	const [selectedMoods, setSelectedMoods] = useState<readonly Mood[]>([]);
 
@@ -30,11 +34,11 @@ export function Greeting() {
 			</div>
 
 			<div className="animate-rise border-t border-mulberry/15 pt-8 [animation-delay:150ms]">
-				<div className="grid gap-10 xl:grid-cols-[1.4fr_1fr] xl:gap-20">
+				<div className="grid gap-10">
 					<div>
 						<h2 className="text-base font-semibold text-charcoal">Find a feeling that fits</h2>
 						<div className="mt-1 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
-							<p className="text-sm text-earth">Choose anyone, or leave it open.</p>
+							<p className="text-sm text-earth">Choose any that fit, or leave it open.</p>
 							<button
 								type="button"
 								disabled={selectedMoods.length === 0}
@@ -66,35 +70,18 @@ export function Greeting() {
 							})}
 						</div>
 					</div>
-					<div className="xl:border-l xl:border-mulberry/10 xl:pl-12">
-						<label htmlFor="weight" className="text-base font-semibold text-charcoal">
-							How much are you carrying?
-						</label>
-						<p className="mt-1 text-sm text-earth">A little, a lot, or somewhere in between?</p>
-						<input
-							id="weight"
-							type="range"
-							min={0}
-							max={100}
-							defaultValue={50}
-							aria-label="How heavy does today feel?"
-							className="mt-6 h-6 w-full cursor-pointer accent-rose focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose"
-						/>
-						<div className="mt-1 flex justify-between text-xs text-earth">
-							<span>Gentle</span>
-							<span>Heavy</span>
-						</div>
-					</div>
+
 				</div>
 				<div className="mt-10 flex flex-wrap items-center justify-between gap-6">
 					<Link
 						to="/mirror"
+						onClick={() => onContinue([])}
 						className="text-link py-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose">
 						Skip for now
 					</Link>
 					<button
 						type="button"
-						onClick={() => navigate("/mirror")}
+						onClick={() => { onContinue(selectedMoods); navigate("/mirror"); }}
 						className="btn-wave flex min-h-12 items-center justify-between gap-12 rounded-full bg-mulberry px-8 py-3.5 text-base font-semibold text-ivory transition-transform duration-150 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose">
 						Continue <span aria-hidden="true">→</span>
 					</button>

@@ -8,10 +8,10 @@ import { responses, selectResponse, type ResponseId } from '@/features/mirror/re
 
 type Stage = 'writing' | 'releasing' | 'response' | 'saved'
 
-export function useMirror() {
+export function useMirror(initialMoods: readonly Mood[]) {
   const { flags, ready, setFlag, saveStatus } = usePreferences()
   const [draft, setDraft] = useState('')
-  const [selectedMoods, setSelectedMoods] = useState<readonly Mood[]>([])
+  const [selectedMoods, setSelectedMoods] = useState<readonly Mood[]>(initialMoods)
   const [quietOverride, setQuietOverride] = useState<boolean | null>(null)
   const quiet = quietOverride ?? flags['support.quiet'] === true
   const [stage, setStage] = useState<Stage>('writing')

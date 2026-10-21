@@ -1,12 +1,18 @@
 import { useEffect, useRef, type CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
-import { moods } from '@/app/moods'
+import { moods, type Mood } from '@/app/moods'
 import { responses } from '@/features/mirror/responses'
 import { DiscardDialog } from '@/features/mirror/DiscardDialog'
 import { useMirror } from '@/features/mirror/useMirror'
 
-export function Mirror() {
-  const mirror = useMirror()
+interface MirrorProps {
+  readonly initialMoods: readonly Mood[]
+  readonly onGreetingConsumed: () => void
+}
+
+export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
+  const mirror = useMirror(initialMoods)
+  useEffect(onGreetingConsumed, [onGreetingConsumed])
   const { stage, draft, selectedMoods, quiet, response, savedIds, blocker } = mirror
   const focusTarget = useRef<HTMLTextAreaElement>(null)
   const resultTarget = useRef<HTMLHeadingElement>(null)
