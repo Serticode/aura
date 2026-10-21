@@ -64,12 +64,18 @@ test.describe('Private Mirror', () => {
         request.onsuccess = () => resolve(request.result)
         request.onerror = () => reject(request.error)
       })
+      const flags = await new Promise<unknown[]>((resolve, reject) => {
+        const request = db.transaction('flags').objectStore('flags').getAll()
+        request.onsuccess = () => resolve(request.result)
+        request.onerror = () => reject(request.error)
+      })
       db.close()
-      return { rows, local: { ...localStorage }, session: { ...sessionStorage } }
+      return { rows, flags, history: history.state, local: { ...localStorage }, session: { ...sessionStorage } }
     })
     expect(stored.rows).toEqual([{ id: 'overwhelmed' }])
     expect(JSON.stringify(stored)).not.toContain('PRIVATE_SENTINEL_aura_2026')
     expect(requests.join(' ')).not.toContain('PRIVATE_SENTINEL_aura_2026')
+    expect(requests.join(' ')).not.toContain('Overwhelmed')
     await page.reload()
     await page.getByRole('button', { name: 'Saved words (1)', exact: true }).click()
     await expect(page.getByText('You don’t have to put every feeling into words. There’s room for you here.', { exact: true })).toBeVisible()
@@ -99,7 +105,11 @@ test.describe('Private Mirror', () => {
     await page.addInitScript(() => {
       IDBFactory.prototype.open = () => { throw new DOMException('Unavailable', 'SecurityError') }
     })
-    await page.goto('/mirror')
+    await page.goto('/settings')
+    await page.getByRole('button', { name: 'Quiet expression', exact: false }).click()
+    await page.getByRole('link', { name: 'Mirror', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Just let me release', exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await page.getByRole('button', { name: 'Gentle words', exact: true }).click()
     await page.getByRole('textbox').fill('Writing without device storage')
     await page.getByRole('button', { name: 'Release', exact: true }).click()
     await expect(page.getByRole('button', { name: 'Express something else' })).toBeVisible()
@@ -116,6 +126,56 @@ test.describe('Private Mirror', () => {
     await settings.getByRole('switch', { name: 'Reduce motion', exact: true }).click()
     await expect(page.getByRole('switch', { name: 'Reduce motion:', exact: false })).toHaveAttribute('aria-checked', 'true')
     await expect(settings.getByRole('switch', { name: 'Platform sounds' })).toBeDisabled()
+  })
+
+
+  test('selects the documented response for every mood and mixed moods', async ({ page }) => {
+    await page.goto('/mirror')
+    const expected: Readonly<Record<string, string>> = {
+      Overwhelmed: 'You don’t have to put every feeling into words. There’s room for you here.',
+      Low: 'You’re allowed to move at the pace you have today.',
+      Tired: 'Thank you for making space for what you feel.',
+      Anxious: 'Thank you for making space for what you feel.',
+      Okay: 'Thank you for making space for what you feel.',
+      Hopeful: 'Thank you for making space for what you feel.',
+      Content: 'Thank you for making space for what you feel.',
+    }
+    for (const [mood, text] of Object.entries(expected)) {
+      await page.getByRole('button', { name: mood, exact: true }).click()
+      await page.getByRole('button', { name: 'Release', exact: true }).click()
+      await expect(page.getByRole('heading', { level: 2 })).toHaveText(text)
+      await page.getByRole('button', { name: 'Express something else' }).click()
+    }
+    await page.getByRole('button', { name: 'Low', exact: true }).click()
+    await page.getByRole('button', { name: 'Overwhelmed', exact: true }).click()
+    await page.getByRole('button', { name: 'Release', exact: true }).click()
+    await expect(page.getByRole('heading', { level: 2 })).toHaveText('Thank you for making space for what you feel.')
+  })
+
+  test('rolls back a failed reset and preserves unrelated storage', async ({ page }) => {
+    await page.goto('/mirror')
+    await page.evaluate(() => localStorage.setItem('unrelated.preference', 'keep'))
+    await page.getByRole('button', { name: 'Low', exact: true }).click()
+    await page.getByRole('button', { name: 'Release', exact: true }).click()
+    await page.getByRole('button', { name: 'Save affirmation', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Saved words (1)', exact: true })).toBeVisible()
+    await page.getByRole('link', { name: 'Settings', exact: true }).click()
+    await page.evaluate(() => {
+      const original = IDBObjectStore.prototype.clear
+      IDBObjectStore.prototype.clear = function () {
+        if (this.name === 'affirmations') {
+          IDBObjectStore.prototype.clear = original
+          throw new DOMException('Simulated reset failure', 'AbortError')
+        }
+        return original.call(this)
+      }
+    })
+    await page.getByRole('button', { name: 'Clear device data', exact: true }).click()
+    await page.getByRole('button', { name: 'Clear data', exact: true }).click()
+    await expect(page.getByText('Could not finish clearing device data.', { exact: false })).toBeVisible()
+    await page.getByRole('link', { name: 'Mirror', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Saved words (1)', exact: true })).toBeVisible()
+    expect(await page.evaluate(() => localStorage.getItem('unrelated.preference'))).toBe('keep')
   })
 
 })
