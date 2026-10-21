@@ -126,6 +126,10 @@ test.describe('Private Mirror', () => {
     await settings.getByRole('switch', { name: 'Reduce motion', exact: true }).click()
     await expect(page.getByRole('switch', { name: 'Reduce motion:', exact: false })).toHaveAttribute('aria-checked', 'true')
     await expect(settings.getByRole('switch', { name: 'Platform sounds' })).toBeDisabled()
+    for (let index = 0; index < 4; index++) await settings.getByRole('button', { name: 'Quiet expression', exact: false }).click()
+    await settings.reload()
+    await expect(settings.getByRole('button', { name: 'Quiet expression', exact: false })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByRole('button', { name: 'Just let me release', exact: true })).toHaveAttribute('aria-pressed', 'true')
   })
 
 
@@ -175,6 +179,13 @@ test.describe('Private Mirror', () => {
     await expect(page.getByText('Could not finish clearing device data.', { exact: false })).toBeVisible()
     await page.getByRole('link', { name: 'Mirror', exact: true }).click()
     await expect(page.getByRole('button', { name: 'Saved words (1)', exact: true })).toBeVisible()
+    expect(await page.evaluate(() => localStorage.getItem('unrelated.preference'))).toBe('keep')
+    await page.getByRole('link', { name: 'Settings', exact: true }).click()
+    await page.getByRole('button', { name: 'Clear device data', exact: true }).click()
+    await page.getByRole('button', { name: 'Clear data', exact: true }).click()
+    await expect(page.getByText('Saved words removed. Your preferences are reset.')).toBeVisible()
+    await page.getByRole('link', { name: 'Mirror', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Saved words (0)', exact: true })).toBeVisible()
     expect(await page.evaluate(() => localStorage.getItem('unrelated.preference'))).toBe('keep')
   })
 
