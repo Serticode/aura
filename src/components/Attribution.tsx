@@ -18,7 +18,7 @@ export function Attribution() {
         <Heart className="h-3 w-3 text-plum transition-transform duration-300 ease-ambient group-hover:animate-heartbeat" />
         <span>Built by Serticode</span>
       </a>
-      <span className="inline-flex items-center gap-1 text-xs text-charcoal/60">
+      <span className="inline-flex items-center gap-1 text-xs text-earth">
         <span>Built for Àyà mí</span>
         <span className="animate-gbim inline-block text-sm leading-none" role="img" aria-label="hibiscus flower">
           🌺

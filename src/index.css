@@ -514,3 +514,11 @@
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
 }
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  nav, dialog, article, [role="group"] {
+    background-color: var(--color-ivory);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

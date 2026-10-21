@@ -4,12 +4,14 @@ import { useDeviceSettings } from '@/features/settings/useDeviceSettings'
 export function DeviceSettings() {
   const device = useDeviceSettings()
   const dialog = useRef<HTMLDialogElement>(null)
+  const clearButton = useRef<HTMLButtonElement>(null)
   const confirming = device.clearState === 'confirming' || device.clearState === 'clearing'
   useEffect(() => {
     if (!confirming) return
     const element = dialog.current!
+    const trigger = clearButton.current
     element.showModal()
-    return () => element.close()
+    return () => { element.close(); trigger?.focus() }
   }, [confirming])
 
   return (
@@ -40,7 +42,7 @@ export function DeviceSettings() {
         <div className="rounded-2xl border border-mulberry/10 bg-white/50 p-6">
           <h3 className="font-semibold text-charcoal">Clear data on this device</h3>
           <p className="mt-2 text-sm leading-relaxed text-earth">Remove saved affirmations and reset support, sound, and motion preferences. This cannot be undone.</p>
-          <button type="button" disabled={!device.ready || device.clearState === 'clearing'} onClick={() => device.setClearState('confirming')}
+          <button ref={clearButton} type="button" disabled={!device.ready || device.clearState === 'clearing'} onClick={() => device.setClearState('confirming')}
             className="text-link mt-4 min-h-11 rounded-sm text-sm [--link-accent:var(--color-danger)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-danger">Clear device data</button>
           <p role="status" className="mt-2 text-sm text-earth">
             {device.clearState === 'complete' && 'Saved words removed. Your preferences are reset.'}
