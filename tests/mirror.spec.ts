@@ -1,41 +1,72 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
+
+async function chooseMood(page: Page, mood: string) {
+  const feelings = page.getByRole('group', { name: 'Optional feelings', includeHidden: true })
+  if (await feelings.count() > 0 && !await feelings.isVisible()) {
+    await page.locator('details').filter({ has: feelings }).locator('summary').click()
+  }
+  await page.getByRole('button', { name: mood, exact: true }).click()
+}
 
 test.describe('Private Mirror', () => {
-  test('hands moods from Greeting to Mirror once and clears repeat expression', async ({ page }) => {
-    await page.goto('/')
-    await page.getByRole('button', { name: 'Overwhelmed', exact: true }).click()
-    await page.getByRole('button', { name: 'Tired', exact: true }).click()
-    await page.getByRole('button', { name: 'Continue' }).click()
-    await expect(page.getByRole('button', { name: 'Overwhelmed', exact: true })).toHaveAttribute('aria-pressed', 'true')
-    await expect(page.getByRole('button', { name: 'Tired', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  test('finishes a release from the acknowledgment screen', async ({ page }) => {
+    await page.goto('/mirror')
+    await page.getByRole('textbox').fill('A passing thought')
     await page.getByRole('button', { name: 'Release', exact: true }).click()
-    await page.getByRole('button', { name: 'Express something else' }).click()
-    await expect(page.getByRole('button', { name: 'Overwhelmed', exact: true })).toHaveAttribute('aria-pressed', 'false')
-    await page.reload()
-    await expect(page.getByRole('button', { name: 'Tired', exact: true })).toHaveAttribute('aria-pressed', 'false')
+    await expect(page.getByRole('heading', { level: 2 })).toBeFocused()
+    await expect(page.getByRole('button', { name: 'Write again', exact: true })).toBeVisible()
+    await page.getByRole('link', { name: 'Done for now', exact: true }).click()
+    await expect(page).toHaveURL('/')
+    await chooseMood(page, 'Okay')
+    await page.getByRole('button', { name: 'Continue', exact: true }).click()
+    await expect(page.getByRole('textbox')).toHaveValue('')
   })
 
-  test('Skip and direct entry start without moods', async ({ page }) => {
+  test('hands moods from Greeting to Mirror once and clears repeat expression', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('button', { name: 'Low', exact: true }).click()
-    await page.getByRole('link', { name: 'Skip for now' }).click()
-    await expect(page.getByRole('button', { name: 'Low', exact: true })).toHaveAttribute('aria-pressed', 'false')
+    await chooseMood(page, 'Overwhelmed')
+    await chooseMood(page, 'Tired')
+    await page.getByRole('button', { name: 'Continue' }).click()
+    await expect(page.getByRole('button', { name: 'Overwhelmed', exact: true, includeHidden: true })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByRole('button', { name: 'Tired', exact: true, includeHidden: true })).toHaveAttribute('aria-pressed', 'true')
+    await page.getByRole('button', { name: 'Release', exact: true }).click()
+    await page.getByRole('button', { name: 'Write again' }).click()
+    await expect(page.getByRole('button', { name: 'Overwhelmed', exact: true, includeHidden: true })).toHaveAttribute('aria-pressed', 'false')
+    await page.reload()
+    await expect(page.getByRole('button', { name: 'Tired', exact: true, includeHidden: true })).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  test('clearing greeting feelings and direct entry start without moods', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeDisabled()
+    await chooseMood(page, 'Low')
+    await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeEnabled()
+    await page.getByRole('button', { name: 'Clear selected feelings', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Clear selected feelings', exact: true })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeDisabled()
+    await page.getByRole('link', { name: 'Mirror', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Low', exact: true, includeHidden: true })).toHaveAttribute('aria-pressed', 'false')
     await page.goto('/mirror')
-    await expect(page.getByRole('button', { name: 'Low', exact: true })).toHaveAttribute('aria-pressed', 'false')
+    await expect(page.getByRole('button', { name: 'Low', exact: true, includeHidden: true })).toHaveAttribute('aria-pressed', 'false')
   })
 
   test('protects drafts on navigation and restores writing focus after Escape', async ({ page }) => {
     await page.goto('/mirror')
     const draft = page.getByRole('textbox')
     await draft.fill('Private unfinished draft')
-    await page.getByRole('link', { name: 'Settings', exact: true }).click()
-    await expect(page.getByRole('dialog')).toBeVisible()
+    await page.getByRole('button', { name: 'Settings', exact: true }).click()
+    await expect(page.getByRole('dialog', { name: 'Settings', exact: true })).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(page.getByRole('dialog', { name: 'Settings', exact: true })).not.toBeVisible()
+    await expect(draft).toHaveValue('Private unfinished draft')
+    await page.getByRole('link', { name: 'Home', exact: true }).click()
+    await expect(page.getByRole('dialog', { name: 'Leave this writing behind?' })).toBeVisible()
     await page.keyboard.press('Escape')
     await expect(draft).toBeFocused()
     await expect(draft).toHaveValue('Private unfinished draft')
-    await page.getByRole('link', { name: 'Settings', exact: true }).click()
+    await page.getByRole('link', { name: 'Home', exact: true }).click()
     await page.getByRole('button', { name: 'Discard and leave' }).click()
-    await expect(page.getByRole('heading', { name: 'Settings', exact: true })).toBeVisible()
+    if (await page.getByRole('dialog', { name: 'Settings', exact: true }).isVisible()) await page.getByRole('button', { name: 'Close settings' }).click()
     await page.getByRole('link', { name: 'Mirror', exact: true }).click()
     await expect(draft).toHaveValue('')
   })
@@ -48,11 +79,11 @@ test.describe('Private Mirror', () => {
     await page.getByRole('button', { name: 'Saved words (0)', exact: true }).click()
     await page.getByRole('button', { name: 'Back to Mirror', exact: true }).click()
     await expect(page.getByRole('textbox')).toHaveValue('PRIVATE_SENTINEL_aura_2026')
-    await page.getByRole('button', { name: 'Overwhelmed', exact: true }).click()
+    await chooseMood(page, 'Overwhelmed')
     await page.getByRole('button', { name: 'Release', exact: true }).click()
     await expect(page.getByRole('heading', { level: 2 })).toBeFocused()
-    await page.getByRole('button', { name: 'Save affirmation', exact: true }).click()
-    await expect(page.getByRole('button', { name: 'Remove saved affirmation', exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await page.getByRole('button', { name: 'Save words', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Saved', exact: true })).toHaveAttribute('aria-pressed', 'true')
     const stored = await page.evaluate(async () => {
       const db = await new Promise<IDBDatabase>((resolve, reject) => {
         const request = indexedDB.open('aura')
@@ -83,13 +114,17 @@ test.describe('Private Mirror', () => {
     await expect(page.getByText('Nothing saved yet.', { exact: false })).toBeVisible()
   })
 
-  test('migrates legacy quiet mode once and reset prevents its resurrection', async ({ page }) => {
+  test('starts with gentle words despite legacy quiet preference and supports reset', async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('aura.support.quiet', 'true'))
     await page.goto('/mirror')
-    await expect(page.getByRole('button', { name: 'Just let me release', exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByRole('button', { name: 'Gentle words', exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await page.getByRole('button', { name: 'Just let me release', exact: true }).click()
     await page.getByRole('button', { name: 'Release', exact: true }).click()
     await expect(page.getByRole('heading', { name: 'Released.', exact: true })).toBeVisible()
-    await page.getByRole('link', { name: 'Settings', exact: true }).click()
+    await page.getByRole('button', { name: 'Write again', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Gentle words', exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await page.getByRole('button', { name: 'Settings', exact: true }).click()
+    if (!await page.getByRole('button', { name: 'Clear device data', exact: true }).isVisible()) await page.getByText('Privacy & device', { exact: true }).click()
     await page.getByRole('button', { name: 'Clear device data', exact: true }).click()
     await page.getByRole('button', { name: 'Keep my data', exact: true }).click()
     await expect(page.getByRole('button', { name: 'Clear device data', exact: true })).toBeFocused()
@@ -97,6 +132,7 @@ test.describe('Private Mirror', () => {
     await page.getByRole('button', { name: 'Clear data', exact: true }).click()
     await expect(page.getByText('Saved words removed. Your preferences are reset.')).toBeVisible()
     await page.reload()
+    if (await page.getByRole('dialog', { name: 'Settings', exact: true }).isVisible()) await page.getByRole('button', { name: 'Close settings' }).click()
     await page.getByRole('link', { name: 'Mirror', exact: true }).click()
     await expect(page.getByRole('button', { name: 'Gentle words', exact: true })).toHaveAttribute('aria-pressed', 'true')
   })
@@ -105,33 +141,29 @@ test.describe('Private Mirror', () => {
     await page.addInitScript(() => {
       IDBFactory.prototype.open = () => { throw new DOMException('Unavailable', 'SecurityError') }
     })
-    await page.goto('/settings')
-    await page.getByRole('button', { name: 'Quiet expression', exact: false }).click()
-    await page.getByRole('link', { name: 'Mirror', exact: true }).click()
-    await expect(page.getByRole('button', { name: 'Just let me release', exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await page.goto('/mirror')
+    await expect(page.getByRole('button', { name: 'Gentle words', exact: true })).toHaveAttribute('aria-pressed', 'true')
     await page.getByRole('button', { name: 'Gentle words', exact: true }).click()
     await page.getByRole('textbox').fill('Writing without device storage')
     await page.getByRole('button', { name: 'Release', exact: true }).click()
-    await expect(page.getByRole('button', { name: 'Express something else' })).toBeVisible()
-    await page.getByRole('button', { name: 'Save affirmation', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Write again' })).toBeVisible()
+    await page.getByRole('button', { name: 'Save words', exact: true }).click()
     await expect(page.getByText('Could not update saved words.', { exact: false })).toBeVisible()
   })
 
-  test('synchronizes quiet and motion preferences across tabs', async ({ page, context }) => {
+  test('synchronizes motion preferences across tabs and saves rapid toggles', async ({ page, context }) => {
     await page.goto('/mirror')
     const settings = await context.newPage()
     await settings.goto('/settings')
-    await settings.getByRole('button', { name: 'Quiet expression', exact: false }).click()
-    await expect(page.getByRole('button', { name: 'Just let me release', exact: true })).toHaveAttribute('aria-pressed', 'true')
-    await settings.getByRole('switch', { name: 'Reduce motion', exact: true }).click()
-    await expect(page.getByRole('switch', { name: 'Reduce motion:', exact: false })).toHaveAttribute('aria-checked', 'true')
-    await expect(settings.getByRole('switch', { name: 'Platform sounds' })).toBeDisabled()
-    for (let index = 0; index < 4; index++) await settings.getByRole('button', { name: 'Quiet expression', exact: false }).click()
+    const motion = settings.getByRole('switch', { name: 'Reduce motion', exact: true })
+    await motion.click()
+    await expect(page.locator('section[data-reduced-motion]')).toHaveAttribute('data-reduced-motion', 'true')
+    for (let index = 0; index < 4; index++) await motion.click()
+    await expect(settings.getByRole('status').filter({ hasText: 'Changes are saved on this device.' }).first()).toBeVisible()
     await settings.reload()
-    await expect(settings.getByRole('button', { name: 'Quiet expression', exact: false })).toHaveAttribute('aria-pressed', 'true')
-    await expect(page.getByRole('button', { name: 'Just let me release', exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await expect(motion).toHaveAttribute('aria-checked', 'true')
+    await expect(page.locator('section[data-reduced-motion]')).toHaveAttribute('data-reduced-motion', 'true')
   })
-
 
   test('selects the documented response for every mood and mixed moods', async ({ page }) => {
     await page.goto('/mirror')
@@ -145,13 +177,13 @@ test.describe('Private Mirror', () => {
       Content: 'Thank you for making space for what you feel.',
     }
     for (const [mood, text] of Object.entries(expected)) {
-      await page.getByRole('button', { name: mood, exact: true }).click()
+      await chooseMood(page, mood)
       await page.getByRole('button', { name: 'Release', exact: true }).click()
       await expect(page.getByRole('heading', { level: 2 })).toHaveText(text)
-      await page.getByRole('button', { name: 'Express something else' }).click()
+      await page.getByRole('button', { name: 'Write again' }).click()
     }
-    await page.getByRole('button', { name: 'Low', exact: true }).click()
-    await page.getByRole('button', { name: 'Overwhelmed', exact: true }).click()
+    await chooseMood(page, 'Low')
+    await chooseMood(page, 'Overwhelmed')
     await page.getByRole('button', { name: 'Release', exact: true }).click()
     await expect(page.getByRole('heading', { level: 2 })).toHaveText('Thank you for making space for what you feel.')
   })
@@ -159,11 +191,12 @@ test.describe('Private Mirror', () => {
   test('rolls back a failed reset and preserves unrelated storage', async ({ page }) => {
     await page.goto('/mirror')
     await page.evaluate(() => localStorage.setItem('unrelated.preference', 'keep'))
-    await page.getByRole('button', { name: 'Low', exact: true }).click()
+    await chooseMood(page, 'Low')
     await page.getByRole('button', { name: 'Release', exact: true }).click()
-    await page.getByRole('button', { name: 'Save affirmation', exact: true }).click()
+    await page.getByRole('button', { name: 'Save words', exact: true }).click()
     await expect(page.getByRole('button', { name: 'Saved words (1)', exact: true })).toBeVisible()
-    await page.getByRole('link', { name: 'Settings', exact: true }).click()
+    await page.getByRole('button', { name: 'Settings', exact: true }).click()
+    if (!await page.getByRole('button', { name: 'Clear device data', exact: true }).isVisible()) await page.getByText('Privacy & device', { exact: true }).click()
     await page.evaluate(() => {
       const original = IDBObjectStore.prototype.clear
       IDBObjectStore.prototype.clear = function () {
@@ -177,13 +210,16 @@ test.describe('Private Mirror', () => {
     await page.getByRole('button', { name: 'Clear device data', exact: true }).click()
     await page.getByRole('button', { name: 'Clear data', exact: true }).click()
     await expect(page.getByText('Could not finish clearing device data.', { exact: false })).toBeVisible()
+    if (await page.getByRole('dialog', { name: 'Settings', exact: true }).isVisible()) await page.getByRole('button', { name: 'Close settings' }).click()
     await page.getByRole('link', { name: 'Mirror', exact: true }).click()
     await expect(page.getByRole('button', { name: 'Saved words (1)', exact: true })).toBeVisible()
     expect(await page.evaluate(() => localStorage.getItem('unrelated.preference'))).toBe('keep')
-    await page.getByRole('link', { name: 'Settings', exact: true }).click()
+    await page.getByRole('button', { name: 'Settings', exact: true }).click()
+    if (!await page.getByRole('button', { name: 'Clear device data', exact: true }).isVisible()) await page.getByText('Privacy & device', { exact: true }).click()
     await page.getByRole('button', { name: 'Clear device data', exact: true }).click()
     await page.getByRole('button', { name: 'Clear data', exact: true }).click()
     await expect(page.getByText('Saved words removed. Your preferences are reset.')).toBeVisible()
+    if (await page.getByRole('dialog', { name: 'Settings', exact: true }).isVisible()) await page.getByRole('button', { name: 'Close settings' }).click()
     await page.getByRole('link', { name: 'Mirror', exact: true }).click()
     await expect(page.getByRole('button', { name: 'Saved words (0)', exact: true })).toBeVisible()
     expect(await page.evaluate(() => localStorage.getItem('unrelated.preference'))).toBe('keep')

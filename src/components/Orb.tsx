@@ -1,7 +1,7 @@
 export function Orb() {
   return (
-    <div aria-hidden="true" className="relative h-32 w-32">
-      <div className="animate-glow absolute -inset-4 rounded-full bg-rose/40 blur-2xl" />
+    <div aria-hidden="true" className="relative h-52 w-52 md:h-64 md:w-64 lg:h-72 lg:w-72">
+      <div className="animate-glow absolute -inset-8 rounded-full bg-rose/30 blur-3xl" />
       <div className="animate-orbit pointer-events-none absolute inset-0">
         <span className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-rose shadow-[0_0_8px_2px_rgba(201,94,132,0.55)]" />
       </div>

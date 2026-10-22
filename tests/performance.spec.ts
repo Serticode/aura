@@ -25,7 +25,7 @@ test.describe('Desktop diagnostic measurements', () => {
         observer.observe(document.body, { childList: true, subtree: true })
         button.click()
       })))
-      await page.getByRole('button', { name: 'Express something else' }).click()
+      await page.getByRole('button', { name: 'Write again' }).click()
     }
     const frameIntervals = await page.evaluate(() => new Promise<number[]>((done) => {
       const intervals: number[] = []

@@ -1,13 +1,13 @@
 import { usePreferences } from '@/data/usePreferences'
 
 export const supportPreferences = [
-  { id: 'encouragement', title: 'Encouragement', description: 'Future preference · Encouragement choices do not change Mirror yet.' },
+  { id: 'encouragement', title: 'Encouragement', description: 'Receive a little encouragement when things feel difficult.' },
   { id: 'quiet', title: 'Quiet expression', description: 'A space to let feelings out without a reply.' },
-  { id: 'shared', title: 'Shared experience', description: 'Future preference · Shared experiences are not available in this pilot.' },
-  { id: 'validation', title: 'Feeling heard', description: 'Future preference · Feeling heard does not change Mirror yet.' },
-  { id: 'reflection', title: 'Room to reflect', description: 'Future preference · Reflection prompts are not available in this pilot.' },
-  { id: 'grounding', title: 'A moment to settle', description: 'Future preference · Grounding invitations are not available in this pilot.' },
-  { id: 'perspective', title: 'A fresh perspective', description: 'Future preference · Perspective prompts are not available in this pilot.' },
+  { id: 'shared', title: 'Shared experience', description: 'Hear from others who recognise what you’re going through.' },
+  { id: 'validation', title: 'Feeling heard', description: 'Have your feelings acknowledged without advice.' },
+  { id: 'reflection', title: 'Room to reflect', description: 'Make room to understand what you’re feeling.' },
+  { id: 'grounding', title: 'A moment to settle', description: 'Take a gentle pause and reconnect with the present.' },
+  { id: 'perspective', title: 'A fresh perspective', description: 'Explore another way to look at what’s on your mind.' },
 ] as const
 
 

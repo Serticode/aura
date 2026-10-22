@@ -7,10 +7,11 @@ Aura is a private expression prototype for adults. The Mirror pilot lets you wri
 - Greeting passes optional moods into Mirror through memory.
 - Mirror writing stays in memory and has no server, AI, telemetry, or history path.
 - Saved words store curated response identifiers only.
-- Settings saves device preferences, supports reduced motion, and clears local Aura data.
+- Settings opens over the current scene, saves device preferences, supports reduced motion, and clears local Aura data.
+- Canvas tools move and scale only the dotted background; content stays fixed. Light and dark appearance are saved on this device.
 - Offline Mirror works after the first successful online load. App updates require an explicit action in Settings.
 
-Pulse and Gathering remain future work and are hidden from pilot navigation. Sound playback is unavailable. Quiet expression controls Mirror’s default response mode; other support choices only record interest in future features.
+Pulse and Gathering remain future work and are hidden from pilot navigation. Sound playback is unavailable. Mirror starts each expression with Gentle words. Quiet release is an explicit choice in Mirror; Settings support choices record interest in future features.
 
 ## Develop
 

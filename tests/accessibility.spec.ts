@@ -16,7 +16,7 @@ test.describe('Accessible private pilot', () => {
     }
     await page.goto('/mirror')
     await page.getByRole('textbox').fill('A private thought')
-    await page.getByRole('link', { name: 'Settings', exact: true }).click()
+    await page.getByRole('button', { name: 'Settings', exact: true }).click()
     const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze()
     expect(results.violations.map(({ id }) => id)).toEqual([])
   })

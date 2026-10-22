@@ -9,11 +9,11 @@ import { responses, selectResponse, type ResponseId } from '@/features/mirror/re
 type Stage = 'writing' | 'releasing' | 'response' | 'saved'
 
 export function useMirror(initialMoods: readonly Mood[]) {
-  const { flags, ready, setFlag, saveStatus } = usePreferences()
+  const { flags, ready } = usePreferences()
   const [draft, setDraft] = useState('')
   const [selectedMoods, setSelectedMoods] = useState<readonly Mood[]>(initialMoods)
-  const [quietOverride, setQuietOverride] = useState<boolean | null>(null)
-  const quiet = quietOverride ?? flags['support.quiet'] === true
+  const [quietOverride, setQuietOverride] = useState(false)
+  const quiet = quietOverride
   const [stage, setStage] = useState<Stage>('writing')
   const [response, setResponse] = useState<(typeof responses)[number]>(responses[2])
   const [savedReturnStage, setSavedReturnStage] = useState<Stage>('writing')
@@ -74,6 +74,7 @@ export function useMirror(initialMoods: readonly Mood[]) {
   function expressAgain() {
     setDraft('')
     setSelectedMoods([])
+    setQuietOverride(false)
     setResponse(responses[2])
     setStage('writing')
     setNotice(null)
@@ -104,7 +105,5 @@ export function useMirror(initialMoods: readonly Mood[]) {
     draft, setDraft, selectedMoods, setSelectedMoods, toggleMood, quiet, setQuietOverride,
     stage, response, notice, setNotice, toggleSavedView, savingId,
     release, expressAgain, savedIds, toggleSaved, blocker, ready, reducedMotion,
-    motionOverride: flags.reducedMotion === true, systemReduced,
-    toggleMotion: () => { void setFlag('reducedMotion', flags.reducedMotion !== true) }, saveStatus,
   }
 }
