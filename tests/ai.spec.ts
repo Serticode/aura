@@ -65,24 +65,28 @@ test.describe("AI reflections", () => {
 		expect(calls).toBe(0);
 	});
 
-	test("the notice respects reduced motion and fits above the toolbar on mobile", async ({ page }) => {
+	test("the notice respects reduced motion and clears the toolbar on phones and tablets", async ({ page }) => {
 		await page.route("**/api/reflect", (route) => route.fulfill({ status: 503, json: {} }));
-		await page.setViewportSize({ width: 320, height: 740 });
 		await page.emulateMedia({ reducedMotion: "reduce" });
-		await page.goto("/mirror");
-		await page.getByRole("textbox").fill("Synthetic failure");
-		await page.getByRole("button", { name: "Release", exact: true }).click();
-		const notice = page.locator(".slide-notice");
-		await expect(notice).toBeVisible();
-		expect(await notice.evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
-		const box = await notice.boundingBox();
-		const toolbar = await page.getByRole("navigation", { name: "Canvas tools" }).boundingBox();
-		expect(box!.x).toBeGreaterThanOrEqual(0);
-		expect(box!.x + box!.width).toBeLessThanOrEqual(320);
-		expect(box!.y + box!.height).toBeLessThan(toolbar!.y);
+		for (const width of [320, 768]) {
+			await page.setViewportSize({ width, height: 740 });
+			await page.goto("/mirror");
+			await page.getByRole("textbox").fill("Synthetic failure");
+			await page.getByRole("button", { name: "Release", exact: true }).click();
+			const notice = page.locator(".slide-notice");
+			await expect(notice).toBeVisible();
+			expect(await notice.evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
+			const box = await notice.boundingBox();
+			const toolbar = await page.getByRole("navigation", { name: "Canvas tools" }).boundingBox();
+			expect(box!.x).toBeGreaterThanOrEqual(0);
+			expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+			expect(box!.y + box!.height).toBeLessThan(toolbar!.y);
+		}
 	});
-	test("failure plays one soft sound and Settings can mute later notices", async ({ page }) => {
+	test("failure schedules one soft sound and Settings can mute later notices", async ({ page }) => {
 		await page.addInitScript(() => {
+			// Headless Firefox may have no output device. Test tone scheduling independently of hardware.
+			Object.defineProperty(AudioContext.prototype, "state", { get: () => "running" });
 			const original = AudioContext.prototype.createOscillator;
 			AudioContext.prototype.createOscillator = function () {
 				const root = document.documentElement;

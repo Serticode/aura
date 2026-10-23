@@ -9,7 +9,7 @@ export function Notice({ message, onDismiss }: NoticeProps) {
 			role="status"
 			aria-live="polite"
 			aria-atomic="true"
-			className="slide-notice fixed bottom-28 right-4 z-30 flex w-[calc(100%-2rem)] max-w-sm items-center gap-3 rounded-[2rem] border border-mulberry/15 bg-clear-surface py-3 pl-4 pr-2 text-surface-ink sm:bottom-8 sm:right-6"
+			className="slide-notice fixed bottom-28 right-4 z-30 flex w-[calc(100%-2rem)] max-w-sm items-center gap-3 rounded-[2rem] border border-mulberry/15 bg-clear-surface py-3 pl-4 pr-2 text-surface-ink lg:bottom-8 lg:right-6"
 		>
 			<span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-surface-hover text-surface-active">!</span>
 			<p className="flex-1 text-sm leading-relaxed">{message}</p>
