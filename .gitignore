@@ -27,3 +27,17 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Browser verification artifacts may contain private input.
+/test-results/
+/playwright-report/
+
+# Local documentation stays untracked.
+/docs/
+
+# Local Worker secrets and state.
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.wrangler/
+

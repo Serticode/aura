@@ -33,14 +33,25 @@ export function Endearment({ prefix, suffix }: EndearmentProps) {
 	return (
 		<span className="endear-greeting">
 			{ENDEARMENTS.map(({ word: measuredWord }) => (
-				<span key={measuredWord} aria-hidden="true" className="endear-line invisible">
-					{prefix}<span className="endear-ending"><span>{measuredWord}</span><span>{suffix}</span></span>
+				<span
+					key={measuredWord}
+					aria-hidden="true"
+					className="endear-line invisible"
+				>
+					{prefix}
+					<span className="endear-ending">
+						<span>{measuredWord}</span>
+						<span>{suffix}</span>
+					</span>
 				</span>
 			))}
 			<span className="endear-line">
-				{prefix}<span className="endear-ending">
+				{prefix}
+				<span className="endear-ending">
 					<span className="endear-word text-rose-deep">
-						<span key={word} className={`endear-word-text ${anim}`}>{word}</span>
+						<span key={word} className={`endear-word-text ${anim}`}>
+							{word}
+						</span>
 						{showShards && (
 							<span className="endear-particles" aria-hidden="true">
 								{Array.from({ length: 8 }).map((_, i) => (
@@ -48,7 +59,8 @@ export function Endearment({ prefix, suffix }: EndearmentProps) {
 								))}
 							</span>
 						)}
-					</span><span>{suffix}</span>
+					</span>
+					<span>{suffix}</span>
 				</span>
 			</span>
 		</span>
