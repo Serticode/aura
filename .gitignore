@@ -31,3 +31,6 @@ dist-ssr
 # Browser verification artifacts may contain private input.
 /test-results/
 /playwright-report/
+
+# Keep the interface reference visible despite global Markdown ignores.
+!/docs/interface-reference.md

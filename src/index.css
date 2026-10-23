@@ -40,6 +40,10 @@
   --color-danger: #d92525;
   --color-danger-border: #c02030;
   --color-clear-surface: #ffffff;
+  --color-surface-ink: #302a2d;
+  --color-surface-muted: #6b5b4e;
+  --color-surface-hover: #f3e9ee;
+  --color-surface-active: #593348;
   --color-rose: #c95e84;
   --color-rose-deep: #b44e75;
   --color-mulberry: #593348;
@@ -562,7 +566,7 @@
 [data-theme="light"] { color-scheme: light; }
 [data-theme="dark"] {
   color-scheme: dark;
-  --color-ivory: #18161e;
+  --color-ivory: #171717;
   --color-charcoal: #f3eaf0;
   --color-earth: #c2b4c0;
   --color-mulberry: #efbed1;
@@ -579,21 +583,22 @@
   background-position: var(--canvas-x, 0px) var(--canvas-y, 0px);
 }
 .canvas-toolbar {
-  background: var(--color-ivory);
+  background: var(--color-clear-surface);
   box-shadow: none;
 }
 .canvas-tool {
   position: relative;
   display: flex;
-  min-width: 36px;
-  height: 36px;
+  min-width: 44px;
+  height: 44px;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  color: var(--color-earth);
+  border-radius: 999px;
+  color: var(--color-surface-muted);
   transition: background-color 150ms, color 150ms;
 }
-.canvas-tool:hover, .canvas-tool[aria-expanded="true"] { background: color-mix(in srgb, var(--color-petal) 35%, transparent); color: var(--color-mulberry); }
+.canvas-tool:hover { background: var(--color-surface-hover); color: var(--color-surface-ink); }
+.canvas-tool[aria-current="page"], .canvas-tool[aria-expanded="true"] { background: var(--color-surface-active); color: var(--color-clear-surface); }
 .canvas-tool:focus-visible { outline: 2px solid var(--color-rose); outline-offset: 2px; }
 .canvas-tool:disabled { opacity: 0.4; }
 .canvas-tool::after {
@@ -634,11 +639,10 @@
 @keyframes settings-open { from { opacity: 0; transform: translateY(16px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes settings-close { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(16px) scale(0.96); } }
 @media (min-width: 700px) {
-  .settings-panel { right: max(20px, calc(50vw - 80px)); }
+  .settings-panel { right: max(20px, calc(50vw - 104px)); }
 }
 @media (max-width: 480px) {
-  .canvas-toolbar { gap: 0; padding: 4px; bottom: 28px; }
-  .canvas-tool { min-width: 36px; height: 44px; }
+  .canvas-toolbar { bottom: 28px; }
   .canvas-toolbar > span { margin-inline: 2px; }
   .settings-panel { right: 16px; bottom: 96px; }
 }

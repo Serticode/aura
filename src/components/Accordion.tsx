@@ -17,7 +17,8 @@ export function Accordion({ title, children }: AccordionProps) {
 					aria-expanded={expanded}
 					aria-controls={id}
 					onClick={() => setExpanded(!expanded)}
-					className="flex min-h-12 w-full items-center justify-between gap-4 rounded-xl px-4 py-3 text-left text-sm font-medium text-charcoal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose">
+					className="flex min-h-12 w-full items-center justify-between gap-4 rounded-xl px-4 py-3 text-left text-sm font-medium text-charcoal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
+				>
 					{title}
 					<svg
 						aria-hidden="true"
@@ -28,14 +29,22 @@ export function Accordion({ title, children }: AccordionProps) {
 						className={[
 							"h-5 w-5 shrink-0 transition-transform duration-200",
 							expanded ? "rotate-180" : "",
-						].join(" ")}>
+						].join(" ")}
+					>
 						<path d="m6 9 6 6 6-6" />
 					</svg>
 				</button>
 			</h3>
-			<div id={id} className="accordion-content" data-expanded={expanded} inert={!expanded}>
+			<div
+				id={id}
+				className="accordion-content"
+				data-expanded={expanded}
+				inert={!expanded}
+			>
 				<div className="min-h-0 overflow-hidden">
-					<div className="mx-4 border-t border-mulberry/10 py-4">{children}</div>
+					<div className="mx-4 border-t border-mulberry/10 py-4">
+						{children}
+					</div>
 				</div>
 			</div>
 		</section>

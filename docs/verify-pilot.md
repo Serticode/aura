@@ -22,18 +22,21 @@ git diff --check
 
 `npm test` builds the production app and starts an isolated preview on port 4185. Keep that port free. The suite creates isolated browser storage, uses synthetic writing, and disables screenshots, traces, and video. Test reports are ignored by Git. Never run checks against a participant’s browser profile or substitute real private writing.
 
-The suite verifies Greeting handoff, draft protection, response focus, save/remove/reload, identifier-only storage, legacy migration, reset, unavailable storage, cross-tab settings, responsive layouts, reduced motion, and automated accessibility checks. Production service-worker tests serve the real bundle from isolated local HTTP servers with the supplied security headers. They exercise offline reload, explicit update acceptance, multi-tab draft preservation, failed updates, and rollback by changing the candidate HTML and precache revision.
+The suite verifies action-button eligibility, Greeting handoff, draft protection, response focus, save/remove/reload, identifier-only storage, legacy migration, reset, unavailable storage, cross-tab settings, background-only canvas movement, Settings focus restoration, appearance persistence, responsive layouts, reduced motion, and automated accessibility checks. Production service-worker tests serve the real bundle from isolated local HTTP servers with the supplied security headers. They exercise offline reload, explicit update acceptance, multi-tab draft preservation, failed updates, and rollback by changing the candidate HTML and precache revision.
 
 These local checks do not verify an actual deployment, installed mobile browsers, or screen-reader announcements.
 
 ## Complete manual accessibility checks
 
-1. Use keyboard only to select and clear moods, skip Greeting, write, release, save, remove, and clear device data.
-2. With VoiceOver and Safari, repeat those actions. Confirm that the writing label, mood selection state, response heading, save status, and dialog names are announced once and intelligibly.
-3. Open each dialog. Confirm focus stays inside it, cancellation comes first, Escape cancels, and focus returns to the trigger or writing.
-4. Use 200% browser zoom and 400% zoom on a desktop viewport. Confirm readable content, visible controls, and no horizontal scrolling at the equivalent 320 CSS-pixel width.
-5. Enable reduced motion, reduced transparency, and increased contrast separately. Confirm that every action still provides readable feedback.
-6. Repeat core flows on the agreed physical iPhone/iPad, Android device, and intended desktop browsers. Record OS, browser, device, and findings.
+1. Use keyboard only to select and clear feelings, continue from Home, enter Mirror from the toolbar, write, release, save, remove, and clear device data.
+2. Check both appearance modes. Confirm the dark canvas uses `#171717`, the writing field stays white before and after focus, and its border highlights on focus. Confirm the toolbar and unselected pills stay white with readable text and icons.
+3. On Home, confirm Continue is disabled with no feelings and enabled after selection. In Mirror, confirm Release is disabled with empty or whitespace-only writing and no feelings. Confirm writing, selecting a feeling, or choosing **Just let me release** enables it; clearing the last input disables it again unless quiet release is selected.
+4. Switch between **Gentle words** and **Just let me release**. Confirm the indicator slides, selection is announced, and reduced motion suppresses the transition.
+5. With VoiceOver and Safari, repeat those actions. Confirm that the writing label, mood selection state, response heading, save status, and dialog names are announced once and intelligibly.
+6. Open each dialog. Confirm focus stays inside it, cancellation comes first, Escape cancels, and focus returns to the trigger or writing.
+7. Use 200% browser zoom and 400% zoom on a desktop viewport. Confirm readable content, visible controls, and no horizontal scrolling at the equivalent 320 CSS-pixel width.
+8. Enable reduced motion, reduced transparency, and increased contrast separately. Confirm that every action still provides readable feedback.
+9. Repeat core flows on the agreed physical iPhone/iPad, Android device, and intended desktop browsers. Record OS, browser, device, and findings.
 
 Manual screen-reader completion and physical-device checks remain pending until a tester records them.
 

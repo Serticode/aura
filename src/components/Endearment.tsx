@@ -33,7 +33,11 @@ export function Endearment({ prefix, suffix }: EndearmentProps) {
 	return (
 		<span className="endear-greeting">
 			{ENDEARMENTS.map(({ word: measuredWord }) => (
-				<span key={measuredWord} aria-hidden="true" className="endear-line invisible">
+				<span
+					key={measuredWord}
+					aria-hidden="true"
+					className="endear-line invisible"
+				>
 					{prefix}
 					<span className="endear-ending">
 						<span>{measuredWord}</span>

@@ -13,7 +13,9 @@ export function usePreferenceState() {
 		let unsubscribe = () => {};
 		function unavailable() {
 			if (active) {
-				setSaveStatus("Device storage is unavailable. Changes apply only while this page is open.");
+				setSaveStatus(
+					"Device storage is unavailable. Changes apply only while this page is open.",
+				);
 				setReady(true);
 			}
 		}
@@ -26,7 +28,9 @@ export function usePreferenceState() {
 				}).subscribe({
 					next: ({ rows, version }) => {
 						if (writes.current > 0 || version !== revision.current) return;
-						setFlags(Object.fromEntries(rows.map(({ id, enabled }) => [id, enabled])));
+						setFlags(
+							Object.fromEntries(rows.map(({ id, enabled }) => [id, enabled])),
+						);
 						setSaveStatus("Changes are saved on this device.");
 						setReady(true);
 					},
@@ -51,7 +55,9 @@ export function usePreferenceState() {
 			await localStore.flags.put({ id, enabled });
 			saved = true;
 		} catch {
-			setSaveStatus("Could not save this change. It applies only while this page is open.");
+			setSaveStatus(
+				"Could not save this change. It applies only while this page is open.",
+			);
 		} finally {
 			writes.current--;
 			const version = ++revision.current;
@@ -59,7 +65,9 @@ export function usePreferenceState() {
 				try {
 					const rows = await localStore.flags.toArray();
 					if (version === revision.current) {
-						setFlags(Object.fromEntries(rows.map(({ id, enabled }) => [id, enabled])));
+						setFlags(
+							Object.fromEntries(rows.map(({ id, enabled }) => [id, enabled])),
+						);
 						setSaveStatus("Changes are saved on this device.");
 					}
 				} catch {
