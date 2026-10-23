@@ -127,7 +127,7 @@ test.describe("Production PWA", () => {
 		}
 	});
 
-	test("works offline after first load and keeps saved identifiers after offline reload", async ({
+	test("preserves writing when AI is offline, supports quiet release, and retains legacy saved words", async ({
 		page,
 		context,
 		candidate,
@@ -146,10 +146,25 @@ test.describe("Production PWA", () => {
 		await page.reload();
 		await page.getByRole("textbox").fill("An offline thought");
 		await page.getByRole("button", { name: "Release", exact: true }).click();
-		await page.getByRole("button", { name: "Save words", exact: true }).click();
-		await expect(
-			page.getByRole("button", { name: "Saved", exact: true }),
-		).toHaveAttribute("aria-pressed", "true");
+		await expect(page.getByRole("textbox")).toHaveValue("An offline thought");
+		await expect(page.getByRole("status").filter({ hasText: "Could not reach AI" })).toBeVisible();
+		await page.getByRole("button", { name: "Just let me release", exact: true }).click();
+		await page.getByRole("button", { name: "Release", exact: true }).click();
+		await expect(page.getByRole("heading", { name: "Released.", exact: true })).toBeVisible();
+		await page.evaluate(async () => {
+			const db = await new Promise<IDBDatabase>((resolve, reject) => {
+				const open = indexedDB.open("aura");
+				open.onsuccess = () => resolve(open.result);
+				open.onerror = () => reject(open.error);
+			});
+			await new Promise<void>((resolve, reject) => {
+				const transaction = db.transaction("affirmations", "readwrite");
+				transaction.objectStore("affirmations").put({ id: "neutral" });
+				transaction.oncomplete = () => resolve();
+				transaction.onerror = () => reject(transaction.error);
+			});
+			db.close();
+		});
 		await page.reload();
 		await page
 			.getByRole("button", { name: "Saved words (1)", exact: true })

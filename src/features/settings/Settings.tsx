@@ -41,11 +41,11 @@ export function Settings({ dark, onToggleTheme }: SettingsProps) {
 					}}
 				/>
 				<SettingSwitch
-					label="Platform sounds"
-					description="Unavailable in this pilot."
-					enabled={flags.sounds === true}
-					disabled={true}
-					onToggle={() => {}}
+					label="Notification sounds"
+					description="A soft sound when a response fails."
+					enabled={flags.notificationSounds !== false}
+					disabled={!ready}
+					onToggle={() => { void setFlag("notificationSounds", flags.notificationSounds === false); }}
 				/>
 			</div>
 			<p role="status" className="mt-2 text-[11px] leading-relaxed text-earth">

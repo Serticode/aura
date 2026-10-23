@@ -2,7 +2,7 @@ import { useEffect, useRef, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import type { Mood } from "@/app/moods";
 import { FeelingPicker } from "@/components/FeelingPicker";
-import { responses } from "@/features/mirror/responses";
+import { Notice } from "@/components/Notice";
 import { DiscardDialog } from "@/features/mirror/DiscardDialog";
 import { useMirror } from "@/features/mirror/useMirror";
 
@@ -43,6 +43,7 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 		"btn-wave inline-flex items-center justify-center min-h-12 rounded-full bg-mulberry px-8 py-3 text-sm font-semibold text-ivory active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose";
 	const textAction =
 		"text-link rounded-sm py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose";
+	const responseLabel = response.source === "ai" ? "AI reflection" : "Quiet acknowledgment";
 
 	return (
 		<section
@@ -58,13 +59,13 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 				<div className="flex flex-wrap items-center gap-7">
 					<button
 						type="button"
-						disabled={stage === "releasing"}
+						disabled={stage === "releasing" || stage === "thinking"}
 						onClick={mirror.toggleSavedView}
 						className={textAction}
 					>
 						{stage === "saved"
 							? "Back to Mirror"
-							: `Saved words (${responses.filter(({ id }) => id !== "quiet" && savedIds.includes(id)).length})`}
+							: `Saved words (${mirror.savedWords.length})`}
 					</button>
 				</div>
 			</header>
@@ -79,13 +80,14 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 							Leave it here.
 						</label>
 						<p id="mirror-privacy" className="sr-only">
-							Your words aren’t saved or sent anywhere.
+							{quiet ? "Your words aren’t saved or sent anywhere." : "On release, your writing and feelings are sent to Atria through Aura for a response."}
 						</p>
 						<textarea
 							ref={focusTarget}
 							id="mirror-draft"
 							aria-describedby="mirror-privacy"
 							value={draft}
+							maxLength={8000}
 							onChange={(event) => {
 								mirror.setDraft(event.target.value);
 								mirror.setNotice(null);
@@ -102,6 +104,7 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 							onToggle={mirror.toggleMood}
 							onClear={() => mirror.setSelectedMoods([])}
 						/>
+
 						<div className="mt-6 flex flex-wrap items-end justify-between gap-4">
 							<div className="max-w-full">
 								<div
@@ -139,7 +142,7 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 							<button
 								type="button"
 								disabled={!mirror.canRelease}
-								onClick={mirror.release}
+								onClick={() => { void mirror.release(); }}
 								className={`${primary} transition-[background-color,color,transform] duration-300 ease-ambient disabled:scale-[0.98] disabled:cursor-not-allowed disabled:bg-earth/15 disabled:text-earth/50`}
 							>
 								Release{" "}
@@ -158,7 +161,7 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 				</>
 			)}
 
-			{stage === "releasing" && (
+			{(stage === "releasing" || stage === "thinking") && (
 				<div
 					role="status"
 					className="flex flex-1 flex-col items-center justify-center py-28"
@@ -177,16 +180,14 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 							/>
 						))}
 					</div>
-					<p className="mt-6 text-sm text-earth">Released.</p>
+					<p className="mt-6 text-sm text-earth">{stage === "thinking" ? "Preparing your AI reflection…" : "Released."}</p>
 				</div>
 			)}
 
 			{stage === "response" && (
 				<div className="animate-rise mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center py-16 text-center">
 					<p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-earth">
-						{response.id === "quiet"
-							? "Quiet acknowledgment"
-							: "Prototype · Curated words"}
+						{responseLabel}
 					</p>
 					<h2
 						ref={resultTarget}
@@ -250,18 +251,16 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 						Words to come back to
 					</h2>
 					<p className="mt-3 text-sm leading-relaxed text-earth">
-						Saved on this device. Your private writing is never included.
+						Only words you choose to save stay on this device.
 					</p>
 					<div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-						{responses
-							.filter(({ id }) => id !== "quiet" && savedIds.includes(id))
-							.map((item) => (
+						{mirror.savedWords.map((item) => (
 								<article key={item.id} className="aura-paper rounded-2xl p-7">
 									<p className="font-display text-xl leading-relaxed text-mulberry">
 										{item.text}
 									</p>
 									<p className="mt-4 text-xs text-earth">
-										Prototype curated copy
+										Saved words
 									</p>
 									<button
 										type="button"
@@ -277,9 +276,7 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 								</article>
 							))}
 					</div>
-					{!responses.some(
-						({ id }) => id !== "quiet" && savedIds.includes(id),
-					) && (
+					{mirror.savedWords.length === 0 && (
 						<p className="mt-12 rounded-2xl border border-dashed border-mulberry/20 px-8 py-12 text-center text-earth">
 							Nothing saved yet. After a release, you can keep words you’d like
 							to revisit.
@@ -289,9 +286,7 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 			)}
 
 			{mirror.notice !== null && (
-				<p role="status" className="mt-5 text-sm text-earth">
-					{mirror.notice}
-				</p>
+				<Notice message={mirror.notice} onDismiss={() => mirror.setNotice(null)} />
 			)}
 			{blocker.state === "blocked" && (
 				<DiscardDialog

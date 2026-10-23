@@ -26,16 +26,20 @@ export function DeviceSettings() {
 						What stays here
 					</h4>
 					<p className="mt-3 text-sm leading-relaxed text-earth">
-						Mirror writing stays in memory while you write. Release or discard
-						clears the draft. It isn’t sent to a server, saved as history, or
-						read by AI.
+						Mirror writing stays in memory while you write. A successful release
+						or discard clears the draft. Quiet release keeps writing on your device.
+						Gentle words always uses AI: release sends your
+						writing and feelings through Aura’s server to Atria. Aura does
+						not save this content or log request bodies. Provider retention
+						has not been verified for this preview.
 					</p>
 					<p className="mt-3 text-sm leading-relaxed text-earth">
-						Saved words keep only the identifier of a curated affirmation. Your
+						Saving words keeps the response text on this device. Your
 						preferences and saved words stay in this browser on this device.
+						Your original writing is never saved as a draft or conversation history. AI responses can reflect details from your writing.
 					</p>
 					<p className="mt-3 text-sm leading-relaxed text-earth">
-						Gentle words are prototype editorial drafts. Gentle words is
+						AI can make mistakes and is not professional care. Gentle words is
 						Mirror’s default. Quiet release is an optional choice for each
 						expression. Other support choices are saved for future features.
 					</p>

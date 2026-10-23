@@ -671,3 +671,13 @@
 }
 
 .btn-wave:disabled::before { display: none; }
+
+.slide-notice { animation: notice-rise 260ms var(--ease-ambient) both; }
+@keyframes notice-rise {
+  from { opacity: 0; transform: translateY(1.25rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slide-notice { animation: none; }
+}
+[data-reduced-motion="true"] .slide-notice { animation: none; }

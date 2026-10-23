@@ -5,6 +5,10 @@ async function chooseMood(page: Page, mood: string) {
 }
 
 test.describe("Private Mirror", () => {
+	test.use({ serviceWorkers: "block" });
+	test.beforeEach(async ({ page }) => {
+		await page.route("**/api/reflect", (route) => route.fulfill({ json: { text: "A gentle AI response." } }));
+	});
 	test("finishes a release from the acknowledgment screen", async ({
 		page,
 	}) => {
@@ -146,7 +150,7 @@ test.describe("Private Mirror", () => {
 		await expect(draft).toHaveValue("");
 	});
 
-	test("keeps writing in memory while saved words are open and saves only identifiers", async ({
+	test("keeps the draft in memory, sends it only on release, and saves only the response", async ({
 		page,
 	}) => {
 		const requests: string[] = [];
@@ -199,17 +203,17 @@ test.describe("Private Mirror", () => {
 				session: { ...sessionStorage },
 			};
 		});
-		expect(stored.rows).toEqual([{ id: "overwhelmed" }]);
+		expect(stored.rows).toEqual([{ id: expect.any(String), text: "A gentle AI response." }]);
 		expect(JSON.stringify(stored)).not.toContain("PRIVATE_SENTINEL_aura_2026");
-		expect(requests.join(" ")).not.toContain("PRIVATE_SENTINEL_aura_2026");
-		expect(requests.join(" ")).not.toContain("Overwhelmed");
+		expect(requests.filter((request) => request.includes("PRIVATE_SENTINEL_aura_2026"))).toHaveLength(1);
+		expect(requests.find((request) => request.includes("PRIVATE_SENTINEL_aura_2026"))).toContain("/api/reflect");
 		await page.reload();
 		await page
 			.getByRole("button", { name: "Saved words (1)", exact: true })
 			.click();
 		await expect(
 			page.getByText(
-				"You don’t have to put every feeling into words. There’s room for you here.",
+				"A gentle AI response.",
 				{ exact: true },
 			),
 		).toBeVisible();
@@ -335,32 +339,25 @@ test.describe("Private Mirror", () => {
 		);
 	});
 
-	test("selects the documented response for every mood and mixed moods", async ({
-		page,
-	}) => {
+	test("sends each selected feeling and mixed feelings to AI", async ({ page }) => {
+		const sent: string[][] = [];
+		await page.route("**/api/reflect", (route) => {
+			sent.push(route.request().postDataJSON().moods);
+			return route.fulfill({ json: { text: "A response from AI." } });
+		});
 		await page.goto("/mirror");
-		const expected: Readonly<Record<string, string>> = {
-			Overwhelmed:
-				"You don’t have to put every feeling into words. There’s room for you here.",
-			Low: "You’re allowed to move at the pace you have today.",
-			Tired: "Thank you for making space for what you feel.",
-			Anxious: "Thank you for making space for what you feel.",
-			Okay: "Thank you for making space for what you feel.",
-			Hopeful: "Thank you for making space for what you feel.",
-			Content: "Thank you for making space for what you feel.",
-		};
-		for (const [mood, text] of Object.entries(expected)) {
+		for (const mood of ["Overwhelmed", "Low", "Tired", "Anxious", "Okay", "Hopeful", "Content"]) {
 			await chooseMood(page, mood);
 			await page.getByRole("button", { name: "Release", exact: true }).click();
-			await expect(page.getByRole("heading", { level: 2 })).toHaveText(text);
+			await expect(page.getByRole("heading", { level: 2 })).toHaveText("A response from AI.");
+			expect(sent.at(-1)).toEqual([mood]);
 			await page.getByRole("button", { name: "Write again" }).click();
 		}
 		await chooseMood(page, "Low");
 		await chooseMood(page, "Overwhelmed");
 		await page.getByRole("button", { name: "Release", exact: true }).click();
-		await expect(page.getByRole("heading", { level: 2 })).toHaveText(
-			"Thank you for making space for what you feel.",
-		);
+		await expect(page.getByRole("heading", { level: 2 })).toHaveText("A response from AI.");
+		expect(sent.at(-1)).toEqual(["Low", "Overwhelmed"]);
 	});
 
 	test("rolls back a failed reset and preserves unrelated storage", async ({

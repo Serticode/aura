@@ -2,15 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { liveQuery } from "dexie";
 import { useBeforeUnload, useBlocker } from "react-router-dom";
 import type { Mood } from "@/app/moods";
+import { useNoticeSound } from "@/features/mirror/useNoticeSound";
+import { requestReflection } from "@/features/mirror/requestReflection";
 import { usePreferences } from "@/data/usePreferences";
 import { localStore } from "@/data/localStore";
-import {
-	responses,
-	selectResponse,
-	type ResponseId,
-} from "@/features/mirror/responses";
+import { responses } from "@/features/mirror/responses";
 
-type Stage = "writing" | "releasing" | "response" | "saved";
+interface Words {
+	readonly id: string;
+	readonly text: string;
+}
+
+type Stage = "writing" | "thinking" | "releasing" | "response" | "saved";
 
 export function useMirror(initialMoods: readonly Mood[]) {
 	const { flags, ready } = usePreferences();
@@ -19,15 +22,17 @@ export function useMirror(initialMoods: readonly Mood[]) {
 		useState<readonly Mood[]>(initialMoods);
 	const [quietOverride, setQuietOverride] = useState(false);
 	const quiet = quietOverride;
+	const sound = useNoticeSound();
+	const pending = useRef<AbortController | null>(null);
+	useEffect(() => () => pending.current?.abort(), []);
 	const [stage, setStage] = useState<Stage>("writing");
-	const [response, setResponse] = useState<(typeof responses)[number]>(
-		responses[2],
-	);
+	const [response, setResponse] = useState<Words & { readonly source: "ai" | "quiet" }>({ ...responses[3], source: "quiet" });
 	const [savedReturnStage, setSavedReturnStage] = useState<Stage>("writing");
-	const [savingId, setSavingId] = useState<ResponseId | null>(null);
+	const [savingId, setSavingId] = useState<string | null>(null);
 	const saving = useRef(false);
 	const [notice, setNotice] = useState<string | null>(null);
-	const [savedIds, setSavedIds] = useState<readonly string[]>([]);
+	const [savedWords, setSavedWords] = useState<readonly Words[]>([]);
+	const savedIds = savedWords.map(({ id }) => id);
 	const [systemReduced, setSystemReduced] = useState(
 		() => matchMedia("(prefers-reduced-motion: reduce)").matches,
 	);
@@ -55,7 +60,11 @@ export function useMirror(initialMoods: readonly Mood[]) {
 			localStore.affirmations.toArray(),
 		).subscribe({
 			next: (rows) => {
-				if (active) setSavedIds(rows.map(({ id }) => id));
+				if (active) setSavedWords(rows.flatMap(({ id, text }) => {
+					if (text !== undefined) return [{ id, text }];
+					const legacy = responses.find((item) => item.id === id && item.id !== "quiet");
+					return legacy === undefined ? [] : [legacy];
+				}));
 			},
 			error: () => {
 				if (active)
@@ -98,9 +107,30 @@ export function useMirror(initialMoods: readonly Mood[]) {
 	const canRelease =
 		ready && (draft.trim().length > 0 || selectedMoods.length > 0 || quiet);
 
-	function release() {
+	async function release() {
 		if (stage !== "writing" || !canRelease) return;
-		setResponse(selectResponse(selectedMoods, quiet));
+		if (!quiet) {
+			sound.prepare();
+			if (pending.current !== null) return;
+			const controller = new AbortController();
+			pending.current = controller;
+			setStage("thinking");
+			setNotice(null);
+			const result = await requestReflection(draft, selectedMoods, AbortSignal.any([controller.signal, AbortSignal.timeout(25000)]));
+			pending.current = null;
+			if (controller.signal.aborted) return;
+			if (!result.ok) {
+				setNotice(result.message);
+				sound.play();
+				setStage("writing");
+				return;
+			}
+			setResponse({ id: crypto.randomUUID(), text: result.text, source: "ai" });
+			setDraft("");
+			setStage("response");
+			return;
+		}
+		setResponse({ ...responses[3], source: "quiet" });
 		setDraft("");
 		setNotice(null);
 		setStage(reducedMotion ? "response" : "releasing");
@@ -109,7 +139,7 @@ export function useMirror(initialMoods: readonly Mood[]) {
 		setDraft("");
 		setSelectedMoods([]);
 		setQuietOverride(false);
-		setResponse(responses[2]);
+		setResponse({ ...responses[3], source: "quiet" });
 		setStage("writing");
 		setNotice(null);
 	}
@@ -121,14 +151,14 @@ export function useMirror(initialMoods: readonly Mood[]) {
 			setStage("saved");
 		}
 	}
-	async function toggleSaved(id: ResponseId) {
+	async function toggleSaved(id: string) {
 		if (saving.current) return;
 		saving.current = true;
 		setSavingId(id);
 		try {
 			const saved = savedIds.includes(id);
 			if (saved) await localStore.affirmations.delete(id);
-			else await localStore.affirmations.put({ id });
+			else await localStore.affirmations.put({ id, text: response.text });
 			setNotice(
 				saved ? "Removed from your saved words." : "Saved on this device.",
 			);
@@ -149,6 +179,7 @@ export function useMirror(initialMoods: readonly Mood[]) {
 		setSelectedMoods,
 		toggleMood,
 		quiet,
+		savedWords,
 		setQuietOverride,
 		stage,
 		response,

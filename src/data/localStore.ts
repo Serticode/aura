@@ -6,6 +6,8 @@ interface Flag {
 }
 interface SavedAffirmation {
 	readonly id: string;
+	// Older curated records contain only an identifier.
+	readonly text?: string;
 }
 
 export const localStore = new Dexie("aura") as Dexie & {

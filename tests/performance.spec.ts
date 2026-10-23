@@ -12,6 +12,7 @@ test.describe("Desktop diagnostic measurements", () => {
 			"Record one controlled desktop diagnostic; physical-device measurement remains manual.",
 		);
 		await page.goto("/mirror");
+		await page.getByRole("textbox").fill("Synthetic performance check");
 		await expect(
 			page.getByRole("button", { name: "Release", exact: true }),
 		).toBeEnabled();
@@ -24,6 +25,7 @@ test.describe("Desktop diagnostic measurements", () => {
 		const samples: number[] = [];
 		for (let index = 0; index < 20; index++) {
 			await page.getByRole("textbox").fill("Synthetic performance check");
+			await page.getByRole("button", { name: "Just let me release", exact: true }).click();
 			samples.push(
 				await page.evaluate(
 					() =>
@@ -71,7 +73,7 @@ test.describe("Desktop diagnostic measurements", () => {
 		const acknowledgmentP95Ms = samples[18]!;
 		const report = {
 			environment:
-				"Headless desktop Chromium, localhost, unthrottled, fresh browser context; not reference-phone evidence",
+				"Quiet release only; headless desktop Chromium, localhost, unthrottled, fresh browser context; not AI latency or reference-phone evidence",
 			browser: browser.version(),
 			...load,
 			samples: samples.length,

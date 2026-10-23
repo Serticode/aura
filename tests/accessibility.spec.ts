@@ -2,6 +2,10 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 test.describe("Accessible private pilot", () => {
+	test.use({ serviceWorkers: "block" });
+	test.beforeEach(async ({ page }) => {
+		await page.route("**/api/reflect", (route) => route.fulfill({ json: { text: "A gentle AI response." } }));
+	});
 	test("has no automated WCAG A or AA findings in its primary views", async ({
 		page,
 	}) => {

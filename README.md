@@ -1,17 +1,17 @@
 # Aura
 
-Aura is a private expression prototype for adults. The Mirror pilot lets you write, choose optional feelings, release privately, and save curated words. The acknowledgment bank remains draft content pending human editorial approval.
+Aura is a private expression prototype for adults. The Mirror pilot lets you write, choose optional feelings, release privately, and save responses on your device. Gentle words uses Atria AI; quiet release remains local.
 
 ## Pilot scope
 
 - Home enables Continue after at least one feeling is selected and passes those feelings into Mirror through memory. Direct Mirror entry does not require a feeling.
-- Mirror writing stays in memory and has no server, AI, telemetry, or history path.
-- Saved words store curated response identifiers only.
+- Mirror writing stays in memory. Gentle words sends writing and selected feelings through a Cloudflare Worker to Atria on release. Quiet release remains local; there is no conversation history or telemetry.
+- Saved words store response text only when you choose Save words. Older curated saves remain readable.
 - Settings opens over the current scene, saves device preferences, supports reduced motion, and clears local Aura data.
 - An icon-only pill toolbar provides Home, Mirror, appearance, and Settings. Background gestures move and scale only the dotted canvas; content stays fixed. Light and dark appearance are saved on this device.
 - Offline Mirror works after the first successful online load. App updates require an explicit action in Settings.
 
-Pulse and Gathering remain future work and are hidden from pilot navigation. Sound playback is unavailable. Mirror starts each expression with Gentle words. Quiet release is an explicit choice in Mirror; Settings support choices record interest in future features.
+Pulse and Gathering remain future work and are hidden from pilot navigation. Failed responses show a floating notice and a soft sound, which you can mute in Settings. Mirror starts each expression with Gentle words. Quiet release is an explicit choice in Mirror; Settings support choices record interest in future features.
 
 ## Interface reference
 
@@ -46,6 +46,10 @@ npm audit
 | `npm run preview` | Serve the production build locally |
 
 The tests need port 4185 and isolated browser storage. Screenshots, traces, and video are disabled; generated reports are ignored by Git. Use synthetic writing only.
+
+## Release with AI
+
+See [Release Aura with Atria on Cloudflare](docs/release-ai.md) to deploy the frontend and AI Worker together, configure the server secret, and verify the live release. AI is disabled in the checked-in deployment configuration until the key is configured.
 
 ## Prepare a pilot release
 

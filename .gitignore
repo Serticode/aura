@@ -34,3 +34,11 @@ dist-ssr
 
 # Keep the interface reference visible despite global Markdown ignores.
 !/docs/interface-reference.md
+
+# Local Worker secrets and state.
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.wrangler/
+
+!/docs/release-ai.md

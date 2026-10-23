@@ -55,11 +55,11 @@ Release is disabled until device preferences are ready and at least one conditio
 - At least one feeling is selected.
 - **Just let me release** is selected.
 
-Use the same muted-to-primary activation treatment as Home’s Continue button. Clearing the last input disables Release again unless quiet release is selected. Release clears writing from React state; saved words persist only curated response identifiers.
+Use the same muted-to-primary activation treatment as Home’s Continue button. Clearing the last input disables Release again unless quiet release is selected. Gentle words always requests an AI response through `/api/reflect`. There is no AI toggle or inline disclosure; Privacy & device explains the data flow. Successful release clears writing from React state. Failed requests preserve it and show a dismissible white pill notice at the bottom right, with an upward entrance and a short sound. Reduced motion disables the entrance animation. On narrow screens, the notice sits above the toolbar. Save words stores the chosen response text locally; older identifier-only saves remain readable.
 
 ## Settings
 
-Use title-and-description rows with switches for appearance, reduced motion, and future support interests. Platform sounds remains disabled because playback is unavailable. Future interests do not change the pilot’s responses.
+Use title-and-description rows with switches for appearance, reduced motion, and future support interests. Notification sounds controls the short failure sound and starts enabled. Future interests do not change the pilot’s responses.
 
 Use the shared `Accordion` for **Privacy & device** and **Preferences for future spaces**. Within Privacy & device, show **What stays here** as a heading and body, followed by the persistence explanation. Do not nest another accordion or card around that explanation. Preserve the explicit confirmation for clearing device data.
 
