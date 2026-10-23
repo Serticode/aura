@@ -23,16 +23,16 @@ function reply(body: object, status: number) {
 }
 
 export interface Env {
-	readonly ATRIA_API_KEY: string | undefined;
-	readonly ATRIA_MODEL: string;
+	readonly DEEP_SEEK_API_KEY: string | undefined;
+	readonly DEEP_SEEK_MODEL: string;
 	readonly AI_ENABLED: string;
 	readonly REFLECTION_LIMITER: { limit(options: { key: string }): Promise<{ success: boolean }> };
 	readonly ASSETS: { fetch(request: Request): Promise<Response> };
 }
 
 export async function reflect(request: Request, env: Env): Promise<Response> {
-	const key = env.ATRIA_API_KEY;
-	const model = env.ATRIA_MODEL;
+	const key = env.DEEP_SEEK_API_KEY;
+	const model = env.DEEP_SEEK_MODEL;
 	const origin = new URL(request.url).origin;
 	if (env.AI_ENABLED !== "true" || !key || !model) {
 		return reply({ error: "AI reflections are not available yet." }, 503);
@@ -82,7 +82,7 @@ export async function reflect(request: Request, env: Env): Promise<Response> {
 		return reply({ error: "Use a valid JSON request." }, 400);
 	}
 	try {
-		const response = await fetch("https://api.atria-asi.ai/v1/chat/completions", {
+		const response = await fetch("https://api.deepseek.com/chat/completions", {
 			method: "POST",
 			headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
 			body: JSON.stringify({
@@ -92,15 +92,18 @@ export async function reflect(request: Request, env: Env): Promise<Response> {
 					{ role: "user", content: JSON.stringify({ writing: input.writing, feelings: input.moods }) },
 				],
 				max_tokens: 400,
+				thinking: { type: "disabled" },
 				stream: false,
 			}),
 			signal: AbortSignal.timeout(20000),
 		});
+		if (response.status === 402) {
+			return reply({ code: "provider_quota", error: "Responses are temporarily unavailable. Your writing is still here." }, 503);
+		}
+		if (response.status === 429) {
+			return reply({ error: "Please wait a minute before trying again." }, 429);
+		}
 		if (!response.ok) {
-			const error = z.object({ error: z.object({ code: z.string() }) }).safeParse(await response.json());
-			if (error.success && error.data.error.code === "insufficient_quota") {
-				return reply({ code: "provider_quota", error: "Responses are temporarily unavailable. Your writing is still here." }, 503);
-			}
 			return reply({ error: "AI is temporarily unavailable. Your writing is still here." }, 502);
 		}
 		const parsed = z.object({

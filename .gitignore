@@ -32,8 +32,8 @@ dist-ssr
 /test-results/
 /playwright-report/
 
-# Keep the interface reference visible despite global Markdown ignores.
-!/docs/interface-reference.md
+# Local documentation stays untracked.
+/docs/
 
 # Local Worker secrets and state.
 .dev.vars
@@ -41,4 +41,3 @@ dist-ssr
 !.dev.vars.example
 .wrangler/
 
-!/docs/release-ai.md

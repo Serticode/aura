@@ -1,11 +1,15 @@
 # Aura
 
-Aura is a private expression prototype for adults. The Mirror pilot lets you write, choose optional feelings, release privately, and save responses on your device. Gentle words uses Atria AI; quiet release remains local.
+Aura is a private expression prototype for adults.
+
+The Mirror pilot lets you write, choose optional feelings, release privately, and save responses on your device.
+
+Gentle words uses DeepSeek AI; quiet release remains local.
 
 ## Pilot scope
 
 - Home enables Continue after at least one feeling is selected and passes those feelings into Mirror through memory. Direct Mirror entry does not require a feeling.
-- Mirror writing stays in memory. Gentle words sends writing and selected feelings through a Cloudflare Worker to Atria on release. Quiet release remains local; there is no conversation history or telemetry.
+- Mirror writing stays in memory. Gentle words sends writing and selected feelings through a Cloudflare Worker to DeepSeek on release. Quiet release remains local; there is no conversation history or telemetry.
 - Saved words store response text only when you choose Save words. Older curated saves remain readable.
 - Settings opens over the current scene, saves device preferences, supports reduced motion, and clears local Aura data.
 - An icon-only pill toolbar provides Home, Mirror, appearance, and Settings. Background gestures move and scale only the dotted canvas; content stays fixed. Light and dark appearance are saved on this device.
@@ -37,19 +41,19 @@ npm run lint
 npm audit
 ```
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Start the development server |
-| `npm run build` | Type-check app, configuration, and tests; build production assets |
-| `npm test` | Build and run browser regression, accessibility, PWA, and desktop diagnostic checks |
-| `npm run lint` | Run OXLint |
-| `npm run preview` | Serve the production build locally |
+| Command           | Purpose                                                                             |
+| ----------------- | ----------------------------------------------------------------------------------- |
+| `npm run dev`     | Start the development server                                                        |
+| `npm run build`   | Type-check app, configuration, and tests; build production assets                   |
+| `npm test`        | Build and run browser regression, accessibility, PWA, and desktop diagnostic checks |
+| `npm run lint`    | Run OXLint                                                                          |
+| `npm run preview` | Serve the production build locally                                                  |
 
 The tests need port 4185 and isolated browser storage. Screenshots, traces, and video are disabled; generated reports are ignored by Git. Use synthetic writing only.
 
 ## Release with AI
 
-See [Release Aura with Atria on Cloudflare](docs/release-ai.md) to deploy the frontend and AI Worker together, configure the server secret, and verify the live release. AI is disabled in the checked-in deployment configuration until the key is configured.
+See [Release Aura with DeepSeek on Cloudflare](docs/release-ai.md) to deploy the frontend and AI Worker together, configure the server secret, and verify the live release. AI is disabled in the checked-in deployment configuration until the key is configured.
 
 ## Prepare a pilot release
 

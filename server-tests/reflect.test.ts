@@ -8,8 +8,8 @@ afterEach(() => mock.restoreAll());
 function environment(): Env {
 	return {
 		AI_ENABLED: "true",
-		ATRIA_API_KEY: "synthetic-test-key",
-		ATRIA_MODEL: "Atria-Dawn",
+		DEEP_SEEK_API_KEY: "synthetic-test-key",
+		DEEP_SEEK_MODEL: "deepseek-flash",
 		REFLECTION_LIMITER: { limit: async () => ({ success: true }) },
 		ASSETS: { fetch: async () => new Response("synthetic asset") },
 	};
@@ -50,7 +50,7 @@ test("unknown fields, unknown feelings, oversized bodies, and malformed JSON are
 	assert.equal(fetchMock.mock.callCount(), 0);
 });
 
-test("a reflection uses the Atria endpoint, server-selected instructions, model, and token cap", async () => {
+test("a reflection uses the DeepSeek endpoint, server-selected instructions, model, and token cap", async () => {
 	const calls: { url: string; body: string }[] = [];
 	mock.method(globalThis, "fetch", async (url: string | URL | Request, init: RequestInit) => {
 		calls.push({ url: String(url), body: typeof init.body === "string" ? init.body : "" });
@@ -61,11 +61,12 @@ test("a reflection uses the Atria endpoint, server-selected instructions, model,
 	assert.equal(response.headers.get("cache-control"), "no-store");
 	assert.deepEqual(await response.json(), { text: "There is room for that feeling." });
 	assert.equal(calls.length, 1);
-	assert.equal(calls[0]!.url, "https://api.atria-asi.ai/v1/chat/completions");
+	assert.equal(calls[0]!.url, "https://api.deepseek.com/chat/completions");
 	const provider = JSON.parse(calls[0]!.body);
-	assert.equal(provider.model, "Atria-Dawn");
+	assert.equal(provider.model, "deepseek-flash");
 	assert.equal(provider.max_tokens, 400);
 	assert.equal(provider.stream, false);
+	assert.deepEqual(provider.thinking, { type: "disabled" });
 	assert.match(provider.messages[0].content, /Do not diagnose/);
 	assert.equal(JSON.parse(provider.messages[1].content).writing, "A synthetic passing thought");
 });
@@ -88,7 +89,7 @@ test("Worker routing serves assets and rejects unknown API routes and methods", 
 });
 
  test("provider quota exhaustion is distinguished from a per-person rate limit", async () => {
-	mock.method(globalThis, "fetch", async () => Response.json({ error: { code: "insufficient_quota" } }, { status: 429 }));
+	mock.method(globalThis, "fetch", async () => Response.json({ error: { type: "insufficient_balance" } }, { status: 402 }));
 	const response = await reflect(request(validInput), environment());
 	assert.equal(response.status, 503);
 	assert.deepEqual(await response.json(), { code: "provider_quota", error: "Responses are temporarily unavailable. Your writing is still here." });

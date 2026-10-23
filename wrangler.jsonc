@@ -13,7 +13,7 @@
   },
   "vars": {
     "AI_ENABLED": "false",
-    "ATRIA_MODEL": "Atria-Dawn"
+    "DEEP_SEEK_MODEL": "deepseek-flash"
   },
   "ratelimits": [
     {

@@ -80,7 +80,7 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 							Leave it here.
 						</label>
 						<p id="mirror-privacy" className="sr-only">
-							{quiet ? "Your words aren’t saved or sent anywhere." : "On release, your writing and feelings are sent to Atria through Aura for a response."}
+							{quiet ? "Your words aren’t saved or sent anywhere." : "On release, your writing and feelings are sent to DeepSeek through Aura for a response."}
 						</p>
 						<textarea
 							ref={focusTarget}
