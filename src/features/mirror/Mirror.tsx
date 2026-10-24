@@ -43,7 +43,6 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 		"btn-wave inline-flex items-center justify-center min-h-12 rounded-full bg-mulberry px-8 py-3 text-sm font-semibold text-ivory active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose";
 	const textAction =
 		"text-link rounded-sm py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose";
-	const responseLabel = response.source === "ai" ? "AI reflection" : "Quiet acknowledgment";
 
 	return (
 		<section
@@ -166,7 +165,12 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 					role="status"
 					className="flex flex-1 flex-col items-center justify-center py-28"
 				>
-					<div aria-hidden="true" className="relative h-24 w-24">
+					{stage === "thinking" ? (
+						<div aria-hidden="true" className="reflection-loader">
+							<span className="reflection-loader-ring" />
+							<span className="reflection-loader-heart">♡</span>
+						</div>
+					) : <div aria-hidden="true" className="relative h-24 w-24">
 						{[0, 1, 2, 3, 4, 5, 6].map((i) => (
 							<span
 								key={i}
@@ -179,16 +183,14 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 								}
 							/>
 						))}
-					</div>
-					<p className="mt-6 text-sm text-earth">{stage === "thinking" ? "Preparing your AI reflection…" : "Released."}</p>
+					</div>}
+					<p className="mt-6 font-display text-2xl text-mulberry">{stage === "thinking" ? "A little moment for you…" : "Released."}</p>
+					{stage === "thinking" && <p className="mt-3 text-sm text-earth">Aura is preparing your response.</p>}
 				</div>
 			)}
 
 			{stage === "response" && (
 				<div className="animate-rise mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center py-16 text-center">
-					<p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-earth">
-						{responseLabel}
-					</p>
 					<h2
 						ref={resultTarget}
 						tabIndex={-1}
@@ -217,7 +219,7 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 							>
 								<path d="M6 3h12v18l-6-4-6 4V3Z" />
 							</svg>
-							<span>
+							<span className="sr-only">
 								{mirror.savingId === response.id
 									? "Saving…"
 									: savedIds.includes(response.id)
@@ -230,13 +232,6 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 						<Link to="/" className={primary}>
 							Done for now
 						</Link>
-						<button
-							type="button"
-							onClick={mirror.expressAgain}
-							className={`${textAction} min-h-11`}
-						>
-							Write again
-						</button>
 					</div>
 				</div>
 			)}

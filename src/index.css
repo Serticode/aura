@@ -681,3 +681,27 @@
   .slide-notice { animation: none; }
 }
 [data-reduced-motion="true"] .slide-notice { animation: none; }
+
+/* Keep request feedback visible after the release animation has ended. */
+.reflection-loader {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  height: 5rem;
+  color: var(--color-mulberry);
+}
+.reflection-loader-ring {
+  position: absolute;
+  inset: 0;
+  border: 2px solid color-mix(in srgb, var(--color-rose) 20%, transparent);
+  border-top-color: var(--color-rose);
+  border-radius: 50%;
+  animation: reflection-turn 2s linear infinite;
+}
+.reflection-loader-heart { font-size: 2rem; line-height: 1; }
+@keyframes reflection-turn { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .reflection-loader-ring { animation: none; }
+}
+[data-reduced-motion="true"] .reflection-loader-ring { animation: none; }

@@ -19,11 +19,13 @@ test.describe("AI reflections", () => {
 		expect(calls).toBe(0);
 		await page.getByRole("button", { name: "Release", exact: true }).click();
 		await expect(page.getByRole("heading", { name: "That feeling has space here." })).toBeFocused();
-		await expect(page.getByText("AI reflection", { exact: true })).toBeVisible();
+		await expect(page.getByText("AI reflection", { exact: true })).toHaveCount(0);
+		await expect(page.getByRole("button", { name: "Write again" })).toHaveCount(0);
 		await page.getByRole("button", { name: "Save words", exact: true }).click();
 		await expect(page.getByRole("button", { name: "Saved", exact: true })).toHaveAttribute("aria-pressed", "true");
 		expect(calls).toBe(1);
-		await page.getByRole("button", { name: "Write again" }).click();
+		await expect(page.getByRole("heading", { level: 2 })).toBeVisible();
+		await page.goto("/mirror");
 		await expect(page.getByRole("textbox")).toHaveValue("");
 	});
 

@@ -26,7 +26,7 @@ test.describe("Private Mirror", () => {
 		await page.getByRole("button", { name: "Release", exact: true }).click();
 		await expect(page.getByRole("heading", { level: 2 })).toBeFocused();
 		await expect(
-			page.getByRole("button", { name: "Write again", exact: true }),
+			page.getByRole("link", { name: "Done for now", exact: true }),
 		).toBeVisible();
 		await page.getByRole("link", { name: "Done for now", exact: true }).click();
 		await expect(page).toHaveURL("/");
@@ -57,7 +57,8 @@ test.describe("Private Mirror", () => {
 			}),
 		).toHaveAttribute("aria-pressed", "true");
 		await page.getByRole("button", { name: "Release", exact: true }).click();
-		await page.getByRole("button", { name: "Write again" }).click();
+		await expect(page.getByRole("heading", { level: 2 })).toBeVisible();
+		await page.goto("/mirror");
 		await expect(
 			page.getByRole("button", {
 				name: "Overwhelmed",
@@ -240,9 +241,8 @@ test.describe("Private Mirror", () => {
 		await expect(
 			page.getByRole("heading", { name: "Released.", exact: true }),
 		).toBeVisible();
-		await page
-			.getByRole("button", { name: "Write again", exact: true })
-			.click();
+		await expect(page.getByRole("heading", { level: 2 })).toBeVisible();
+		await page.goto("/mirror");
 		await expect(
 			page.getByRole("button", { name: "Gentle words", exact: true }),
 		).toHaveAttribute("aria-pressed", "true");
@@ -300,7 +300,7 @@ test.describe("Private Mirror", () => {
 		await page.getByRole("textbox").fill("Writing without device storage");
 		await page.getByRole("button", { name: "Release", exact: true }).click();
 		await expect(
-			page.getByRole("button", { name: "Write again" }),
+			page.getByRole("link", { name: "Done for now" }),
 		).toBeVisible();
 		await page.getByRole("button", { name: "Save words", exact: true }).click();
 		await expect(
@@ -351,7 +351,8 @@ test.describe("Private Mirror", () => {
 			await page.getByRole("button", { name: "Release", exact: true }).click();
 			await expect(page.getByRole("heading", { level: 2 })).toHaveText("A response from AI.");
 			expect(sent.at(-1)).toEqual([mood]);
-			await page.getByRole("button", { name: "Write again" }).click();
+			await expect(page.getByRole("heading", { level: 2 })).toBeVisible();
+		await page.goto("/mirror");
 		}
 		await chooseMood(page, "Low");
 		await chooseMood(page, "Overwhelmed");
