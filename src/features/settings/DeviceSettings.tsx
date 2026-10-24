@@ -28,7 +28,7 @@ export function DeviceSettings() {
 					<p className="mt-3 text-sm leading-relaxed text-earth">
 						Mirror writing stays in memory while you write. A successful release
 						or discard clears the draft. Quiet release keeps writing on your device.
-						Gentle words always uses AI: release sends your
+						Gentle words responses are written by AI using Aura’s default writing profile, not personally sent by a partner. Release sends your
 						writing and feelings through Aura’s server to DeepSeek. Aura does
 						not save this content or log request bodies. Provider retention
 						has not been verified for this preview.
