@@ -95,7 +95,7 @@ export function FooterUpdates() {
 					strokeWidth="1.6"
 					strokeLinecap="round"
 					strokeLinejoin="round"
-					className="size-4"
+					className="size-5"
 				>
 					<rect x="5" y="3" width="14" height="18" rx="3" />
 					<path d="M9 8h6M9 12h6M9 16h3" />
