@@ -30,6 +30,7 @@ export function SettingSwitch({
 			<button
 				type="button"
 				role="switch"
+				data-sound={label === "Interaction sounds" || label === "Notification sounds" ? "preference" : "select"}
 				aria-label={label}
 				aria-describedby={descriptionId}
 				aria-checked={enabled}

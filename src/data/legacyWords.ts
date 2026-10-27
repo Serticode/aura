@@ -1,5 +1,3 @@
-import type { Mood } from "@/app/moods";
-
 // Editorial drafts from the experience guidelines; not approved clinical content.
 export const responses = [
 	{
@@ -40,11 +38,3 @@ export const responses = [
 	},
 ] as const;
 
-export type ResponseId = (typeof responses)[number]["id"];
-
-export function selectResponse(moods: readonly Mood[], quiet: boolean) {
-	if (quiet) return responses[3];
-	if (moods.length === 1 && moods[0] === "Overwhelmed") return responses[0];
-	if (moods.length === 1 && moods[0] === "Low") return responses[1];
-	return responses[2];
-}

@@ -1,4 +1,5 @@
 import Dexie, { type EntityTable } from "dexie";
+import { supportIds } from "@/domain/preferences";
 
 interface Flag {
 	readonly id: string;
@@ -16,13 +17,12 @@ export const localStore = new Dexie("aura") as Dexie & {
 };
 localStore.version(1).stores({ flags: "id", affirmations: "id" });
 
-export async function loadFlags(): Promise<readonly Flag[]> {
+export async function migrateLegacyPreferences(): Promise<void> {
 	await localStore.transaction("rw", localStore.flags, async () => {
 		if (await localStore.flags.get("_legacy_migrated")) return;
-		const ids = ["encouragement", "quiet", "shared", "validation", "reflection", "grounding", "perspective"];
 		const flags: Flag[] = [];
 		try {
-			for (const id of ids)
+			for (const id of supportIds)
 				flags.push({
 					id: `support.${id}`,
 					enabled: localStorage.getItem(`aura.support.${id}`) === "true",
@@ -36,18 +36,31 @@ export async function loadFlags(): Promise<readonly Flag[]> {
 		}
 		await localStore.flags.bulkPut([...flags, { id: "_legacy_migrated", enabled: true }]);
 	});
-	return localStore.flags.toArray();
 }
 
-export async function clearLocalData() {
-	// Remove legacy keys so older preferences cannot return after a reset.
-	for (const id of ["encouragement", "quiet", "shared", "validation", "reflection", "grounding", "perspective"]) {
-		localStorage.removeItem(`aura.support.${id}`);
+export type ClearDataResult =
+	| { readonly status: "complete" }
+	| { readonly status: "device-cleared" }
+	| { readonly status: "legacy-cleared" }
+	| { readonly status: "error" };
+
+export async function clearLocalData(): Promise<ClearDataResult> {
+	let legacyCleared = true;
+	try {
+		for (const id of supportIds) localStorage.removeItem(`aura.support.${id}`);
+		localStorage.removeItem("aura.sounds");
+	} catch {
+		legacyCleared = false;
 	}
-	localStorage.removeItem("aura.sounds");
-	await localStore.transaction("rw", localStore.flags, localStore.affirmations, async () => {
-		await localStore.flags.clear();
-		await localStore.affirmations.clear();
-		await localStore.flags.put({ id: "_legacy_migrated", enabled: true });
-	});
+	try {
+		await localStore.transaction("rw", localStore.flags, localStore.affirmations, async () => {
+			await localStore.flags.clear();
+			await localStore.affirmations.clear();
+			// Prevent old preferences returning even when legacy storage cannot be accessed.
+			await localStore.flags.put({ id: "_legacy_migrated", enabled: true });
+		});
+		return { status: legacyCleared ? "complete" : "device-cleared" };
+	} catch {
+		return { status: legacyCleared ? "legacy-cleared" : "error" };
+	}
 }

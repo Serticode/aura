@@ -5,11 +5,13 @@ import { AppUpdate } from "@/app/AppUpdate";
 import { useCanvas } from "@/app/useCanvas";
 import { useAppearance } from "@/app/useAppearance";
 import { usePreferences } from "@/data/usePreferences";
+import { useInteractionSounds } from "@/audio/useInteractionSounds";
 import { Attribution } from "@/components/Attribution";
 import { BrandHeader } from "@/components/BrandHeader";
 import { Settings } from "@/features/settings/Settings";
 
 export function AppShell() {
+	useInteractionSounds();
 	const { flags, ready } = usePreferences();
 	const appearance = useAppearance();
 	const appUpdate = useAppUpdate();

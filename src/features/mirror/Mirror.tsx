@@ -1,6 +1,6 @@
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import type { Mood } from "@/app/moods";
+import type { Mood } from "@/domain/moods";
 import { FeelingPicker } from "@/components/FeelingPicker";
 import { Notice } from "@/components/Notice";
 import { DiscardDialog } from "@/features/mirror/DiscardDialog";
@@ -14,8 +14,9 @@ interface MirrorProps {
 export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 	const mirror = useMirror(initialMoods);
 	useEffect(onGreetingConsumed, [onGreetingConsumed]);
-	const { stage, draft, selectedMoods, quiet, response, savedIds, blocker } =
+	const { state, draft, selectedMoods, quiet, savedIds, blocker } =
 		mirror;
+	const stage = state.stage;
 	const focusTarget = useRef<HTMLTextAreaElement>(null);
 	const resultTarget = useRef<HTMLHeadingElement>(null);
 	const previousStage = useRef(stage);
@@ -44,42 +45,20 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 	const textAction =
 		"text-link rounded-sm py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose";
 
-	return (
-		<section
-			data-reduced-motion={mirror.reducedMotion}
-			className="mx-auto flex min-h-screen w-full max-w-[100rem] flex-col px-6 pt-28 md:px-12 lg:px-20 pb-36"
-		>
-			<header className="flex flex-wrap items-center justify-between gap-5 pb-6">
-				<div>
-					<h1 className="font-display text-2xl font-medium tracking-tight text-mulberry md:text-3xl">
-						Mirror
-					</h1>
-				</div>
-				<div className="flex flex-wrap items-center gap-7">
-					<button
-						type="button"
-						disabled={stage === "releasing" || stage === "thinking"}
-						onClick={mirror.toggleSavedView}
-						className={textAction}
-					>
-						{stage === "saved"
-							? "Back to Mirror"
-							: `Saved words (${mirror.savedWords.length})`}
-					</button>
-				</div>
-			</header>
-
-			{stage === "writing" && (
+	let scene: ReactNode;
+	switch (state.stage) {
+		case "writing":
+			scene = (
 				<>
 					<div className="animate-rise mx-auto flex w-full max-w-6xl flex-1 flex-col pt-12 lg:pt-16">
 						<label
 							htmlFor="mirror-draft"
-							className="font-display text-3xl font-medium leading-tight tracking-tight text-mulberry lg:text-4xl"
+							className="font-display text-3xl font-medium leading-tight tracking-tight text-heading lg:text-4xl"
 						>
 							Leave it here.
 						</label>
 						<p id="mirror-privacy" className="sr-only">
-							{quiet ? "Your words aren’t saved or sent anywhere." : "On release, your writing and feelings are sent to DeepSeek through Aura for a response."}
+							{quiet ? "Your words aren’t saved or sent anywhere." : "On release, your writing and feelings are sent through Aura to its response provider."}
 						</p>
 						<textarea
 							ref={focusTarget}
@@ -140,6 +119,7 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 							</div>
 							<button
 								type="button"
+								data-sound={quiet ? "none" : "tap"}
 								disabled={!mirror.canRelease}
 								onClick={() => { void mirror.release(); }}
 								className={`${primary} transition-[background-color,color,transform] duration-300 ease-ambient disabled:scale-[0.98] disabled:cursor-not-allowed disabled:bg-earth/15 disabled:text-earth/50`}
@@ -158,9 +138,11 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 						</div>
 					</div>
 				</>
-			)}
-
-			{(stage === "releasing" || stage === "thinking") && (
+			);
+			break;
+		case "releasing":
+		case "thinking":
+			scene = (
 				<div
 					role="status"
 					className="flex flex-1 flex-col items-center justify-center py-28"
@@ -184,17 +166,19 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 							/>
 						))}
 					</div>}
-					<p className="mt-6 font-display text-2xl text-mulberry">{stage === "thinking" ? "A little moment for you…" : "Released."}</p>
+					<p className="mt-6 font-display text-2xl text-heading">{stage === "thinking" ? "A little moment for you…" : "Released."}</p>
 					{stage === "thinking" && <p className="mt-3 text-sm text-earth">Aura is preparing your response.</p>}
 				</div>
-			)}
-
-			{stage === "response" && (
+			);
+			break;
+		case "response": {
+			const response = state.response;
+			scene = (
 				<div className="animate-rise mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center py-16 text-center">
 					<h2
 						ref={resultTarget}
 						tabIndex={-1}
-						className="mt-6 rounded-lg font-display text-3xl font-medium leading-relaxed text-mulberry outline-none lg:text-4xl"
+						className="mt-6 rounded-lg font-display text-3xl font-medium leading-relaxed text-heading outline-none lg:text-4xl"
 					>
 						{response.text}
 					</h2>
@@ -204,9 +188,9 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 							aria-disabled={mirror.savingId !== null}
 							aria-pressed={savedIds.includes(response.id)}
 							onClick={() => {
-								void mirror.toggleSaved(response.id);
+								void mirror.toggleSaved(response);
 							}}
-							className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-sm px-2 py-2 text-sm leading-none text-earth hover:text-mulberry focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose"
+							className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-sm px-2 py-2 text-sm leading-none text-earth hover:text-heading focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose"
 						>
 							<svg
 								aria-hidden="true"
@@ -234,14 +218,16 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 						</Link>
 					</div>
 				</div>
-			)}
-
-			{stage === "saved" && (
+			);
+			break;
+		}
+		case "saved":
+			scene = (
 				<div className="mx-auto w-full max-w-6xl flex-1 py-8">
 					<h2
 						ref={resultTarget}
 						tabIndex={-1}
-						className="font-display text-3xl font-medium text-mulberry outline-none"
+						className="font-display text-3xl font-medium text-heading outline-none"
 					>
 						Words to come back to
 					</h2>
@@ -251,7 +237,7 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 					<div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
 						{mirror.savedWords.map((item) => (
 								<article key={item.id} className="aura-paper rounded-2xl p-7">
-									<p className="font-display text-xl leading-relaxed text-mulberry">
+									<p className="font-display text-xl leading-relaxed text-heading">
 										{item.text}
 									</p>
 									<p className="mt-4 text-xs text-earth">
@@ -261,7 +247,7 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 										type="button"
 										aria-disabled={mirror.savingId !== null}
 										onClick={() => {
-											void mirror.toggleSaved(item.id);
+											void mirror.toggleSaved(item);
 										}}
 										aria-label={`Remove affirmation: ${item.text}`}
 										className={`${textAction} mt-3 [--link-accent:var(--color-danger)]`}
@@ -278,7 +264,40 @@ export function Mirror({ initialMoods, onGreetingConsumed }: MirrorProps) {
 						</p>
 					)}
 				</div>
-			)}
+			);
+			break;
+		default: {
+			const unexpected: never = state;
+			throw new Error(`Unexpected Mirror state: ${unexpected}`);
+		}
+	}
+
+	return (
+		<section
+			data-reduced-motion={mirror.reducedMotion}
+			className="mx-auto flex min-h-screen w-full max-w-[100rem] flex-col px-6 pt-28 md:px-12 lg:px-20 pb-36"
+		>
+			<header className="flex flex-wrap items-center justify-between gap-5 pb-6">
+				<div>
+					<h1 className="font-display text-2xl font-medium tracking-tight text-heading md:text-3xl">
+						Mirror
+					</h1>
+				</div>
+				<div className="flex flex-wrap items-center gap-7">
+					<button
+						type="button"
+						disabled={stage === "releasing" || stage === "thinking"}
+						onClick={mirror.toggleSavedView}
+						className={textAction}
+					>
+						{stage === "saved"
+							? "Back to Mirror"
+							: `Saved words (${mirror.savedWords.length})`}
+					</button>
+				</div>
+			</header>
+
+			{scene}
 
 			{mirror.notice !== null && (
 				<Notice message={mirror.notice} onDismiss={() => mirror.setNotice(null)} />

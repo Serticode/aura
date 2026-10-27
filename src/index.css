@@ -47,6 +47,7 @@
   --color-rose: #c95e84;
   --color-rose-deep: #b44e75;
   --color-mulberry: #593348;
+  --color-heading: #593348;
   --color-petal: #e8c6cb;
   --color-ivory: #faf6f0;
   --color-charcoal: #302a2d;
@@ -567,15 +568,22 @@
 [data-theme="dark"] {
   color-scheme: dark;
   --color-ivory: #171717;
-  --color-charcoal: #f3eaf0;
-  --color-earth: #c2b4c0;
-  --color-mulberry: #efbed1;
+  --color-charcoal: #ded9d3;
+  --color-heading: #e8e3de;
+  --color-earth: #b5afa8;
+  /* Accent is for actions; reading text uses the neutral heading and charcoal tokens. */
+  --color-mulberry: #d2a3b6;
+  --color-clear-surface: #242322;
+  --color-surface-ink: #ded9d3;
+  --color-surface-muted: #b5afa8;
+  --color-surface-hover: #35312f;
+  --color-surface-active: #d2a3b6;
   --color-petal: #493343;
   --color-rose: #d779a1;
   --color-rose-deep: #efa2c2;
-  --color-white: #302a35;
+  --color-white: #2b2927;
 }
-[data-theme="dark"] [role="switch"] > span { background-color: #f3eaf0; }
+[data-theme="dark"] [role="switch"] > span { background-color: var(--color-ivory); }
 [data-theme="dark"] header img { filter: brightness(0) invert(0.85); }
 
 .aura-space {

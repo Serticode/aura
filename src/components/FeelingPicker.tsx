@@ -1,4 +1,4 @@
-import { moods, type Mood } from "@/app/moods";
+import { moods, type Mood } from "@/domain/moods";
 import { ClearSelectionButton } from "@/components/ClearSelectionButton";
 
 interface FeelingPickerProps {

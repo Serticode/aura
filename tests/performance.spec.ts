@@ -52,7 +52,8 @@ test.describe("Desktop diagnostic measurements", () => {
 						}),
 				),
 			);
-			await page.getByRole("button", { name: "Write again" }).click();
+			await page.getByRole("link", { name: "Done for now", exact: true }).click();
+			await page.getByRole("link", { name: "Mirror", exact: true }).click();
 		}
 		const frameIntervals = await page.evaluate(
 			() =>

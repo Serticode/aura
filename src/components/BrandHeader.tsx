@@ -8,7 +8,7 @@ export function BrandHeader() {
 				className="h-8 w-8"
 			/>
 			<div>
-				<p className="font-display text-xl leading-none text-mulberry">aura</p>
+				<p className="font-display text-xl leading-none text-heading">aura</p>
 			</div>
 		</header>
 	);

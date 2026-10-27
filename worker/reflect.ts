@@ -1,10 +1,6 @@
 import { z } from "zod";
+import { reflectionInputSchema, type ReflectionInput } from "../src/contracts/reflection.ts";
 import { reflectionInstructions } from "./voice-profile.ts";
-
-const inputSchema = z.object({
-	writing: z.string().trim().max(8000),
-	moods: z.array(z.enum(["Overwhelmed", "Low", "Tired", "Anxious", "Okay", "Hopeful", "Content"])).max(7),
-}).strict().refine(({ writing, moods }) => writing.length > 0 || moods.length > 0);
 
 function reply(body: object, status: number) {
 	return Response.json(body, {
@@ -26,7 +22,7 @@ export async function reflect(request: Request, env: Env): Promise<Response> {
 	const model = env.DEEP_SEEK_MODEL;
 	const origin = new URL(request.url).origin;
 	if (env.AI_ENABLED !== "true" || !key || !model) {
-		return reply({ error: "AI reflections are not available yet." }, 503);
+		return reply({ error: "Reflections are not available yet." }, 503);
 	}
 	if (request.headers.get("origin") !== origin) {
 		return reply({ error: "This request is not allowed." }, 403);
@@ -36,11 +32,11 @@ export async function reflect(request: Request, env: Env): Promise<Response> {
 	}
 	try {
 		const ip = request.headers.get("CF-Connecting-IP");
-		if (ip === null) return reply({ error: "AI reflections are temporarily unavailable." }, 503);
+		if (ip === null) return reply({ error: "Reflections are temporarily unavailable." }, 503);
 		const { success } = await env.REFLECTION_LIMITER.limit({ key: ip });
 		if (!success) return reply({ error: "Please wait a minute before trying again." }, 429);
 	} catch {
-		return reply({ error: "AI reflections are temporarily unavailable." }, 503);
+		return reply({ error: "Reflections are temporarily unavailable." }, 503);
 	}
 	const reader = request.body?.getReader();
 	if (!reader) return reply({ error: "A reflection needs writing or feelings." }, 400);
@@ -64,9 +60,9 @@ export async function reflect(request: Request, env: Env): Promise<Response> {
 	} finally {
 		reader.releaseLock();
 	}
-	let input: z.infer<typeof inputSchema>;
+	let input: ReflectionInput;
 	try {
-		const parsed = inputSchema.safeParse(JSON.parse(body));
+		const parsed = reflectionInputSchema.safeParse(JSON.parse(body));
 		if (!parsed.success) return reply({ error: "Check your writing and selected feelings." }, 400);
 		input = parsed.data;
 	} catch {
@@ -95,7 +91,7 @@ export async function reflect(request: Request, env: Env): Promise<Response> {
 			return reply({ error: "Please wait a minute before trying again." }, 429);
 		}
 		if (!response.ok) {
-			return reply({ error: "AI is temporarily unavailable. Your writing is still here." }, 502);
+			return reply({ error: "Responses are temporarily unavailable. Your writing is still here." }, 502);
 		}
 		const parsed = z.object({
 			choices: z.array(z.object({
@@ -108,6 +104,6 @@ export async function reflect(request: Request, env: Env): Promise<Response> {
 		}
 		return reply({ text: parsed.data.choices[0]!.message.content }, 200);
 	} catch {
-		return reply({ error: "Could not reach AI. Your writing is still here; you can try again." }, 502);
+		return reply({ error: "Could not connect to Aura. Your writing is still here; you can try again." }, 502);
 	}
 }

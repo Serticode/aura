@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import type { Mood } from "@/app/moods";
+import type { Mood } from "@/domain/moods";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "@/app/AppShell";
 import { Greeting } from "@/features/greeting/Greeting";
