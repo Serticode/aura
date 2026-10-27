@@ -28,18 +28,18 @@ export function DeviceSettings() {
 					<p className="mt-3 text-sm leading-relaxed text-earth">
 						Mirror writing stays in memory while you write. A successful release
 						or discard clears the draft. Quiet release keeps writing on your device.
-						Gentle words responses are written by AI using Aura’s default writing profile, not personally sent by a partner. Release sends your
-						writing and feelings through Aura’s server to DeepSeek. Aura does
+						Gentle words responses are created automatically using Aura’s writing profile. They are not personally sent by a partner. Release sends your
+						writing and feelings through Aura’s server to its response provider. Aura does
 						not save this content or log request bodies. Provider retention
 						has not been verified for this preview.
 					</p>
 					<p className="mt-3 text-sm leading-relaxed text-earth">
 						Saving words keeps the response text on this device. Your
 						preferences and saved words stay in this browser on this device.
-						Your original writing is never saved as a draft or conversation history. AI responses can reflect details from your writing.
+						Your original writing is never saved as a draft or conversation history. Saved responses can include details from your writing.
 					</p>
 					<p className="mt-3 text-sm leading-relaxed text-earth">
-						AI can make mistakes and is not professional care. Gentle words is
+						Responses can contain mistakes and do not replace professional care. Gentle words is
 						Mirror’s default. Quiet release is an optional choice for each
 						expression. Other support choices are saved for future features.
 					</p>
@@ -67,6 +67,10 @@ export function DeviceSettings() {
 					<p role="status" className="mt-2 text-sm text-earth">
 						{device.clearState === "complete" &&
 							"Saved words removed. Your preferences are reset."}
+						{device.clearState === "device-cleared" &&
+							"Saved words removed and preferences reset. Older browser preferences could not be removed."}
+						{device.clearState === "legacy-cleared" &&
+							"Could not finish clearing device data. Older browser preferences were removed, but saved words and device preferences remain. Please try again."}
 						{device.clearState === "error" &&
 							"Could not finish clearing device data. Try again; your browser may have storage disabled."}
 					</p>
@@ -82,7 +86,7 @@ export function DeviceSettings() {
 				}}
 				className="m-auto w-[min(28rem,90vw)] rounded-3xl border border-mulberry/15 bg-ivory p-8 text-charcoal shadow-xl backdrop:bg-mulberry/25"
 			>
-				<h2 id="clear-title" className="text-xl font-semibold text-mulberry">
+				<h2 id="clear-title" className="text-xl font-semibold text-heading">
 					Clear your device data?
 				</h2>
 				<p

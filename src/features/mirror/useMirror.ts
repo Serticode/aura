@@ -1,19 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { liveQuery } from "dexie";
 import { useBeforeUnload, useBlocker } from "react-router-dom";
-import type { Mood } from "@/app/moods";
+import type { Mood } from "@/domain/moods";
+import { playSound, prepareSound } from "@/audio/sounds";
 import { useNoticeSound } from "@/features/mirror/useNoticeSound";
 import { requestReflection } from "@/features/mirror/requestReflection";
 import { usePreferences } from "@/data/usePreferences";
-import { localStore } from "@/data/localStore";
-import { responses } from "@/features/mirror/responses";
-
-interface Words {
-	readonly id: string;
-	readonly text: string;
-}
-
-type Stage = "writing" | "thinking" | "releasing" | "response" | "saved";
+import { useSavedWords } from "@/features/mirror/useSavedWords";
+import type { MirrorState, Reflection } from "@/features/mirror/mirrorState";
 
 export function useMirror(initialMoods: readonly Mood[]) {
 	const { flags, ready } = usePreferences();
@@ -23,16 +16,20 @@ export function useMirror(initialMoods: readonly Mood[]) {
 	const [quietOverride, setQuietOverride] = useState(false);
 	const quiet = quietOverride;
 	const sound = useNoticeSound();
-	const pending = useRef<AbortController | null>(null);
-	useEffect(() => () => pending.current?.abort(), []);
-	const [stage, setStage] = useState<Stage>("writing");
-	const [response, setResponse] = useState<Words & { readonly source: "ai" | "quiet" }>({ ...responses[3], source: "quiet" });
-	const [savedReturnStage, setSavedReturnStage] = useState<Stage>("writing");
-	const [savingId, setSavingId] = useState<string | null>(null);
-	const saving = useRef(false);
-	const [notice, setNotice] = useState<string | null>(null);
-	const [savedWords, setSavedWords] = useState<readonly Words[]>([]);
-	const savedIds = savedWords.map(({ id }) => id);
+	const [state, setState] = useState<MirrorState>({ stage: "writing" });
+	const previousStage = useRef(state.stage);
+	useEffect(() => {
+		if (previousStage.current === "thinking" && state.stage === "response" && flags.sounds === true) playSound("complete");
+		previousStage.current = state.stage;
+	}, [state, flags.sounds]);
+	const saved = useSavedWords();
+	const { notice, setNotice } = saved;
+	const savedIds = saved.words.map(({ id }) => id);
+	useEffect(() => {
+		if (state.stage !== "thinking") return;
+		const controller = state.controller;
+		return () => controller.abort();
+	}, [state]);
 	const [systemReduced, setSystemReduced] = useState(
 		() => matchMedia("(prefers-reduced-motion: reduce)").matches,
 	);
@@ -55,46 +52,17 @@ export function useMirror(initialMoods: readonly Mood[]) {
 		return () => query.removeEventListener("change", onChange);
 	}, []);
 	useEffect(() => {
-		let active = true;
-		const subscription = liveQuery(() =>
-			localStore.affirmations.toArray(),
-		).subscribe({
-			next: (rows) => {
-				if (active) setSavedWords(rows.flatMap(({ id, text }) => {
-					if (text !== undefined) return [{ id, text }];
-					const legacy = responses.find((item) => item.id === id && item.id !== "quiet");
-					return legacy === undefined ? [] : [legacy];
-				}));
-			},
-			error: () => {
-				if (active)
-					setNotice(
-						"Saved words are unavailable because device storage could not be opened.",
-					);
-			},
-		});
-		return () => {
-			active = false;
-			subscription.unsubscribe();
-		};
-	}, []);
-	useEffect(() => {
-		if (stage !== "releasing") return;
-		const timer = window.setTimeout(
-			() => setStage("response"),
-			reducedMotion ? 0 : 500,
-		);
-		return () => window.clearTimeout(timer);
-	}, [stage, reducedMotion]);
-
-	useEffect(() => {
-		const finishWhenHidden = () => {
-			if (document.hidden && stage === "releasing") setStage("response");
-		};
+		if (state.stage !== "releasing") return;
+		const response = state.response;
+		const finish = () => setState({ stage: "response", response });
+		const timer = window.setTimeout(finish, reducedMotion ? 0 : 500);
+		const finishWhenHidden = () => { if (document.hidden) finish(); };
 		document.addEventListener("visibilitychange", finishWhenHidden);
-		return () =>
+		return () => {
+			window.clearTimeout(timer);
 			document.removeEventListener("visibilitychange", finishWhenHidden);
-	}, [stage]);
+		};
+	}, [state, reducedMotion]);
 
 	function toggleMood(mood: Mood) {
 		setSelectedMoods((current) =>
@@ -108,92 +76,49 @@ export function useMirror(initialMoods: readonly Mood[]) {
 		ready && (draft.trim().length > 0 || selectedMoods.length > 0 || quiet);
 
 	async function release() {
-		if (stage !== "writing" || !canRelease) return;
-		if (!quiet) {
-			sound.prepare();
-			if (pending.current !== null) return;
-			const controller = new AbortController();
-			pending.current = controller;
-			setStage("thinking");
-			setNotice(null);
-			const result = await requestReflection(draft, selectedMoods, AbortSignal.any([controller.signal, AbortSignal.timeout(25000)]));
-			pending.current = null;
-			if (controller.signal.aborted) return;
-			if (!result.ok) {
-				setNotice(result.message);
-				sound.play();
-				setStage("writing");
-				return;
-			}
-			setResponse({ id: crypto.randomUUID(), text: result.text, source: "ai" });
+		if (state.stage !== "writing" || !canRelease) return;
+		setNotice(null);
+		if (quiet) {
+			const response: Reflection = { id: "quiet", text: "Released.", source: "quiet" };
 			setDraft("");
-			setStage("response");
+			setState({ stage: reducedMotion ? "response" : "releasing", response });
 			return;
 		}
-		setResponse({ ...responses[3], source: "quiet" });
-		setDraft("");
-		setNotice(null);
-		setStage(reducedMotion ? "response" : "releasing");
-	}
-	function expressAgain() {
-		setDraft("");
-		setSelectedMoods([]);
-		setQuietOverride(false);
-		setResponse({ ...responses[3], source: "quiet" });
-		setStage("writing");
-		setNotice(null);
-	}
-	function toggleSavedView() {
-		setNotice(null);
-		if (stage === "saved") setStage(savedReturnStage);
-		else {
-			setSavedReturnStage(stage);
-			setStage("saved");
-		}
-	}
-	async function toggleSaved(id: string) {
-		if (saving.current) return;
-		saving.current = true;
-		setSavingId(id);
-		try {
-			const saved = savedIds.includes(id);
-			if (saved) await localStore.affirmations.delete(id);
-			else await localStore.affirmations.put({ id, text: response.text });
-			setNotice(
-				saved ? "Removed from your saved words." : "Saved on this device.",
-			);
-		} catch {
-			setNotice(
-				"Could not update saved words. Your browser may have device storage disabled.",
-			);
-		} finally {
-			saving.current = false;
-			setSavingId(null);
+		sound.prepare();
+		if (flags.sounds === true) prepareSound();
+		const controller = new AbortController();
+		setState({ stage: "thinking", controller });
+		const result = await requestReflection(draft, selectedMoods, AbortSignal.any([controller.signal, AbortSignal.timeout(25000)]));
+		if (controller.signal.aborted) return;
+		switch (result.ok) {
+			case false:
+				setNotice(result.message);
+				sound.play();
+				setState({ stage: "writing" });
+				return;
+			case true:
+				setDraft("");
+				setState({ stage: "response", response: { id: crypto.randomUUID(), text: result.text, source: "reflection" } });
 		}
 	}
 
+	function toggleSavedView() {
+		setNotice(null);
+		setState(current => {
+			switch (current.stage) {
+				case "saved": return current.returnTo;
+				case "writing":
+				case "response": return { stage: "saved", returnTo: current };
+				case "thinking":
+				case "releasing": return current;
+			}
+		});
+	}
+
 	return {
-		draft,
-		setDraft,
-		selectedMoods,
-		setSelectedMoods,
-		toggleMood,
-		quiet,
-		savedWords,
-		setQuietOverride,
-		stage,
-		response,
-		notice,
-		setNotice,
-		toggleSavedView,
-		savingId,
-		release,
-		canRelease,
-		expressAgain,
-		savedIds,
-		toggleSaved,
-		blocker,
-		ready,
-		reducedMotion,
+		draft, setDraft, selectedMoods, setSelectedMoods, toggleMood,
+		quiet, setQuietOverride, state, notice, setNotice, toggleSavedView,
+		savedWords: saved.words, savingId: saved.savingId, toggleSaved: saved.toggle,
+		release, canRelease, savedIds, blocker, ready, reducedMotion,
 	};
 }

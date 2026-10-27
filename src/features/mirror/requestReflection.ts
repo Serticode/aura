@@ -1,4 +1,5 @@
-import type { Mood } from "@/app/moods";
+import type { Mood } from "@/domain/moods";
+import { reflectionResponseSchema } from "@/contracts/reflection";
 
 type ReflectionResult =
 	| { readonly ok: true; readonly text: string }
@@ -18,17 +19,17 @@ export async function requestReflection(
 			cache: "no-store",
 		});
 		if (response.status === 429) {
-			return { ok: false, message: "Please wait a minute before trying AI again. Your writing is still here." };
+			return { ok: false, message: "Please wait a minute before trying again. Your writing is still here." };
 		}
 		if (!response.ok) {
 			return { ok: false, message: "Responses are unavailable right now. Your writing is still here. Please try again shortly." };
 		}
-		const data: unknown = await response.json();
-		if (typeof data !== "object" || data === null || !("text" in data) || typeof data.text !== "string" || data.text.trim().length === 0) {
-			return { ok: false, message: "AI could not complete this reflection. Your writing is still here." };
+		const parsed = reflectionResponseSchema.safeParse(await response.json());
+		if (!parsed.success) {
+			return { ok: false, message: "Your reflection could not be completed. Your writing is still here." };
 		}
-		return { ok: true, text: data.text };
+		return { ok: true, text: parsed.data.text };
 	} catch {
-		return { ok: false, message: "Could not reach AI. Your writing is still here; you can try again." };
+		return { ok: false, message: "Could not connect to Aura. Your writing is still here; you can try again." };
 	}
 }

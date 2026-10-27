@@ -18,7 +18,7 @@ export function Settings({ dark, onToggleTheme }: SettingsProps) {
 	return (
 		<section className="w-full px-6 py-6">
 			<header className="mb-3 pr-12">
-				<h2 className="font-display text-2xl text-mulberry">
+				<h2 className="font-display text-2xl text-heading">
 					Make yourself at home.
 				</h2>
 				<p className="mt-2 text-xs text-earth">Your space, your settings.</p>
@@ -39,6 +39,13 @@ export function Settings({ dark, onToggleTheme }: SettingsProps) {
 					onToggle={() => {
 						void setFlag("reducedMotion", flags.reducedMotion !== true);
 					}}
+				/>
+				<SettingSwitch
+					label="Interaction sounds"
+					description="Soft feedback for buttons, selections and responses. Quiet release stays silent."
+					enabled={flags.sounds === true}
+					disabled={!ready}
+					onToggle={() => { void setFlag("sounds", flags.sounds !== true); }}
 				/>
 				<SettingSwitch
 					label="Notification sounds"

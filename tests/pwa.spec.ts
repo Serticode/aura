@@ -147,7 +147,7 @@ test.describe("Production PWA", () => {
 		await page.getByRole("textbox").fill("An offline thought");
 		await page.getByRole("button", { name: "Release", exact: true }).click();
 		await expect(page.getByRole("textbox")).toHaveValue("An offline thought");
-		await expect(page.getByRole("status").filter({ hasText: "Could not reach AI" })).toBeVisible();
+		await expect(page.getByRole("status").filter({ hasText: "Could not connect to Aura" })).toBeVisible();
 		await page.getByRole("button", { name: "Just let me release", exact: true }).click();
 		await page.getByRole("button", { name: "Release", exact: true }).click();
 		await expect(page.getByRole("heading", { name: "Released.", exact: true })).toBeVisible();

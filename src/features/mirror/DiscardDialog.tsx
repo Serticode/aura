@@ -30,7 +30,7 @@ export function DiscardDialog({ onStay, onDiscard }: DiscardDialogProps) {
 			}}
 			className="m-auto w-[min(28rem,90vw)] rounded-3xl border border-mulberry/15 bg-ivory p-8 text-charcoal shadow-xl backdrop:bg-mulberry/25"
 		>
-			<h2 id="discard-title" className="text-xl font-semibold text-mulberry">
+			<h2 id="discard-title" className="text-xl font-semibold text-heading">
 				Leave this writing behind?
 			</h2>
 			<p className="mt-3 text-base leading-relaxed text-earth">

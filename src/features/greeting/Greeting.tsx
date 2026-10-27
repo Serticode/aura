@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Endearment } from "@/components/Endearment";
 import { FeelingPicker } from "@/components/FeelingPicker";
 import { Orb } from "@/components/Orb";
-import type { Mood } from "@/app/moods";
+import type { Mood } from "@/domain/moods";
 
 interface GreetingProps {
 	readonly onContinue: (moods: readonly Mood[]) => void;
@@ -20,7 +20,7 @@ export function Greeting({ onContinue }: GreetingProps) {
 					<Orb />
 				</div>
 				<div className="text-center">
-					<h1 className="animate-rise w-full font-display text-3xl font-medium leading-tight tracking-tight text-mulberry md:text-5xl lg:text-5xl">
+					<h1 className="animate-rise w-full font-display text-3xl font-medium leading-tight tracking-tight text-heading md:text-5xl lg:text-5xl">
 						<Endearment prefix="How does today feel, " suffix="?" />
 					</h1>
 					<p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-earth">

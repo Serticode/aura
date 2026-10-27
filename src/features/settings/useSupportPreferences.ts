@@ -1,3 +1,4 @@
+import type { SupportId } from "@/domain/preferences";
 import { usePreferences } from "@/data/usePreferences";
 
 export const supportPreferences = [
@@ -38,14 +39,12 @@ export const supportPreferences = [
 	},
 ] as const;
 
-type PreferenceId = (typeof supportPreferences)[number]["id"];
-
 export function useSupportPreferences() {
 	const { flags, ready, setFlag, saveStatus } = usePreferences();
 	const chosen = supportPreferences
 		.filter(({ id }) => flags[`support.${id}`] === true)
 		.map(({ id }) => id);
-	function togglePreference(id: PreferenceId) {
+	function togglePreference(id: SupportId) {
 		void setFlag(`support.${id}`, !chosen.includes(id));
 	}
 	return { chosen, togglePreference, saveStatus, ready };
