@@ -55,6 +55,20 @@
   --color-green: #526653;
   --color-earth: #6b5b4e;
   --color-plum: #8b5aa8;
+  --color-update-sun: #ffe173;
+  --color-update-rose: #ffa9c0;
+  --color-update-lilac: #c4a7ff;
+  --color-update-sky: #97ceff;
+  --color-update-mint: #9ae3cb;
+  --color-update-ink: #302a2d;
+  --color-update-surface: #fffcf8;
+  --color-update-glow-start: #c4a7ff38;
+  --color-update-glow-end: #97ceff38;
+  --color-update-confirm: #593348;
+  --color-update-confirm-ink: #ffffff;
+  --radius-update-tile: 0.75rem;
+  --shadow-update-tile: 0 3px 10px;
+  --shadow-update-highlight: inset 0 1px 0 #ffffff66;
 
   --font-sans: "Manrope Variable", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces Variable", ui-serif, Georgia, serif;
@@ -582,6 +596,11 @@
   --color-rose: #d779a1;
   --color-rose-deep: #efa2c2;
   --color-white: #2b2927;
+  --color-update-surface: #2a2c30;
+  --color-update-glow-start: #a980db26;
+  --color-update-glow-end: #63b8ef21;
+  --color-update-confirm: #ffffff;
+  --color-update-confirm-ink: #171717;
 }
 [data-theme="dark"] [role="switch"] > span { background-color: var(--color-ivory); }
 [data-theme="dark"] header img { filter: brightness(0) invert(0.85); }
@@ -650,7 +669,7 @@
   .settings-panel { right: max(20px, calc(50vw - 104px)); }
 }
 @media (max-width: 480px) {
-  .canvas-toolbar { bottom: 28px; }
+  .canvas-toolbar { bottom: 56px; }
   .canvas-toolbar > span { margin-inline: 2px; }
   .settings-panel { right: 16px; bottom: 96px; }
 }
@@ -713,3 +732,49 @@
   .reflection-loader-ring { animation: none; }
 }
 [data-reduced-motion="true"] .reflection-loader-ring { animation: none; }
+
+/* The update panel is a deliberate colourful material, following the video reference. */
+.updates-material {
+  max-height: min(40rem, calc(100svh - 6rem));
+  background:
+    radial-gradient(ellipse 65% 7rem at 18% 0, var(--color-update-glow-start), transparent),
+    radial-gradient(ellipse 65% 7rem at 88% 0, var(--color-update-glow-end), transparent),
+    var(--color-update-surface);
+  transform-origin: bottom left;
+  box-shadow: none;
+}
+.updates-material[open] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  animation: settings-open 300ms var(--ease-ambient) both;
+}
+.updates-material[data-closing="true"] { animation: settings-close 180ms var(--ease-ambient) both; }
+.updates-material::backdrop { background: transparent; }
+.updates-scroll { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--color-earth) 35%, transparent) transparent; }
+[data-update-tone="sun"] { --update-tone: var(--color-update-sun); }
+[data-update-tone="rose"] { --update-tone: var(--color-update-rose); }
+[data-update-tone="lilac"] { --update-tone: var(--color-update-lilac); }
+[data-update-tone="sky"] { --update-tone: var(--color-update-sky); }
+[data-update-tone="mint"] { --update-tone: var(--color-update-mint); }
+[data-update-tone] { background: var(--update-tone); }
+.update-tile {
+  color: var(--color-update-ink);
+  border-radius: var(--radius-update-tile);
+  box-shadow: var(--shadow-update-tile) color-mix(in srgb, var(--update-tone) 20%, transparent), var(--shadow-update-highlight);
+}
+.updates-confirm { background: var(--color-update-confirm); color: var(--color-update-confirm-ink); }
+@media (prefers-reduced-motion: reduce) {
+  .updates-material[open] { animation-name: fade; }
+  .updates-material[data-closing="true"] { animation-name: updates-fade-out; }
+}
+[data-reduced-motion="true"] .updates-material[open] { animation-name: fade; }
+[data-reduced-motion="true"] .updates-material[data-closing="true"] { animation-name: updates-fade-out; }
+@keyframes updates-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .updates-material { background: var(--color-update-surface); }
+  .update-tile { box-shadow: none; }
+}
+@media (forced-colors: active) {
+  .updates-material, .update-tile, .updates-confirm { border: 1px solid CanvasText; }
+  [data-testid="updates-unread"] { background: Highlight; forced-color-adjust: none; }
+}

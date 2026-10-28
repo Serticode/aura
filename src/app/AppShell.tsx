@@ -92,7 +92,7 @@ export function AppShell() {
 			<BrandHeader />
 			<nav
 				aria-label="Canvas tools"
-				className="canvas-toolbar fixed bottom-8 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-mulberry/15 px-3 py-2"
+				className="canvas-toolbar fixed bottom-14 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-mulberry/15 px-3 py-2"
 			>
 				<NavLink
 					end

@@ -10,12 +10,18 @@ interface SavedAffirmation {
 	// Older curated records contain only an identifier.
 	readonly text?: string;
 }
+interface UpdateReadState {
+	readonly id: string;
+	readonly releaseId: string;
+}
 
 export const localStore = new Dexie("aura") as Dexie & {
 	flags: EntityTable<Flag, "id">;
 	affirmations: EntityTable<SavedAffirmation, "id">;
+	updates: EntityTable<UpdateReadState, "id">;
 };
 localStore.version(1).stores({ flags: "id", affirmations: "id" });
+localStore.version(2).stores({ flags: "id", affirmations: "id", updates: "id" });
 
 export async function migrateLegacyPreferences(): Promise<void> {
 	await localStore.transaction("rw", localStore.flags, async () => {
@@ -53,9 +59,10 @@ export async function clearLocalData(): Promise<ClearDataResult> {
 		legacyCleared = false;
 	}
 	try {
-		await localStore.transaction("rw", localStore.flags, localStore.affirmations, async () => {
+		await localStore.transaction("rw", localStore.flags, localStore.affirmations, localStore.updates, async () => {
 			await localStore.flags.clear();
 			await localStore.affirmations.clear();
+			await localStore.updates.clear();
 			// Prevent old preferences returning even when legacy storage cannot be accessed.
 			await localStore.flags.put({ id: "_legacy_migrated", enabled: true });
 		});

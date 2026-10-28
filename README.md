@@ -19,6 +19,10 @@ Pulse and Gathering remain future work and are hidden from pilot navigation. Fai
 
 ## Interface reference
 
+The document icon in the footer opens **What’s new**: dated release notes in a floating panel. A small dot marks updates not yet opened on this device. Viewing the panel saves only the latest release identifier in IndexedDB; clearing device data resets it. If storage is unavailable, the panel still works and read status lasts for the current page session.
+
+To publish a changelog update, prepend a dated entry with a new stable ID to `src/features/updates/releases.ts`, describing only changes included in that build. Keep older entries and IDs unchanged. Ship the notes with the app; this panel does not poll a server or install app updates. The existing Settings update action still controls installation of a waiting app version.
+
 See [Aura interface reference](docs/interface-reference.md) for the canvas, colors, shared controls, Mirror interactions, and Settings patterns. See [Mirror pilot review evidence](docs/pilot-review.md) for completed checks and remaining release gates.
 
 ## Develop
